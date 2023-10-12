@@ -5,7 +5,7 @@ fn main() {
     let app = app::App::default();
     let mut win = Window::default().with_size(800, 480);
 
-    let mut container_spindle = Pack::new(10, 10, 250, 35, "Spindle Type");
+    let mut container_spindle = Pack::new(20, 10, 300, 35, "Spindle Type");
 
     // setup control for spindle media
     let mut choice_spindle_1_media_type = choice::MyChoice::new(20, 20, 80, 30, None);
@@ -63,7 +63,7 @@ fn main() {
     container_status.set_color(Color::Black);
     container_status.set_type(PackType::Horizontal);
 
-    let mut button_rip = Button::new(560, 210, 120, 40, "Start Ripping!");
+    let mut button_rip = Button::new(600, 210, 120, 40, "Start Ripping!");
 
     let mut button_stop = Button::new(600, 310, 120, 40, "Stop!");
 
