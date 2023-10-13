@@ -186,6 +186,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "fltk-table"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9f8be6e136c21caed84c848d05a10ffeddee611150f9ba6ed55aae2e766f14a"
+dependencies = [
+ "fltk",
+]
+
+[[package]]
 name = "fltk-theme"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -270,8 +279,10 @@ dependencies = [
  "crossbeam",
  "crossbeam-channel",
  "fltk",
+ "fltk-table",
  "fltk-theme",
  "lazy_static",
+ "rppal",
  "serde",
  "serde_json",
  "tokio-test",
@@ -306,6 +317,15 @@ name = "ripper_client"
 version = "0.0.1"
 dependencies = [
  "tokio-test",
+]
+
+[[package]]
+name = "rppal"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "612e1a22e21f08a246657c6433fe52b773ae43d07c9ef88ccfc433cc8683caba"
+dependencies = [
+ "libc",
 ]
 
 [[package]]
