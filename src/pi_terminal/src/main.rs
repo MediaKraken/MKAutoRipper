@@ -3,6 +3,7 @@ use fltk_table::{SmartTable, TableOpts};
 use std::fs;
 use std::{cell::RefCell, rc::Rc};
 
+mod byte_size;
 mod choice;
 
 fn main() {
@@ -96,15 +97,29 @@ fn main() {
     let pi_model = fs::read_to_string("/sys/firmware/devicetree/base/model").unwrap();
     info_table.set_cell_value(0, 1, &pi_model);
     info_table.set_cell_value(1, 0, "Memory");
-    // pinout exe
-    info_table.set_cell_value(1, 1, "N/A");
+    info_table.set_cell_value(
+        1,
+        1,
+        &byte_size::mk_lib_common_bytesize(sys_info::mem_info().unwrap().total).unwrap(),
+    );
     info_table.set_cell_value(2, 0, "Disk");
-    info_table.set_cell_value(2, 1, "N/A");
+    info_table.set_cell_value(
+        2,
+        1,
+        &byte_size::mk_lib_common_bytesize(sys_info::disk_info().unwrap().total).unwrap(),
+    );
     info_table.set_cell_value(3, 0, "Camera");
     info_table.set_cell_value(3, 1, "N/A");
     info_table.set_cell_value(4, 0, "OS");
-    let pi_os = fs::read_to_string("/proc/version").unwrap();
-    info_table.set_cell_value(4, 1, &pi_os);
+    let os_release_info = sys_info::linux_os_release().unwrap();
+    info_table.set_cell_value(
+        4,
+        1,
+        &format!(
+            "{:?} {:?}",
+            os_release_info.name, os_release_info.version_id
+        ),
+    );
 
     container_info.end();
     container_info.set_frame(FrameType::BorderFrame);
@@ -127,9 +142,11 @@ fn main() {
     let mut button_up = Button::new(675, 75, 50, 50, "Up");
     let mut button_down = Button::new(675, 125, 50, 50, "Down");
     let mut button_right = Button::new(725, 100, 50, 50, "Right");
+
     // activate equipment
     let mut button_vacuum = Button::new(620, 180, 80, 50, "Vacuum");
     let mut button_snapshot = Button::new(700, 180, 80, 50, "Snapshot");
+
     // following are for buffer/cleaner
     let mut button_water = Button::new(585, 240, 70, 50, "Water");
     let mut button_spinner = Button::new(655, 240, 70, 50, "Spinner");
