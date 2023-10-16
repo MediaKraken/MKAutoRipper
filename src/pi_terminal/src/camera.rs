@@ -29,9 +29,8 @@ pub fn camera_take_image(
             "-e",
             "png",
             "-o",
-            media_file,
-            "-n",
             &media_file,
+            "-n",
         ])
         .stdout(Stdio::piped())
         .output()
