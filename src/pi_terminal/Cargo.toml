@@ -17,7 +17,7 @@ fltk = { version = "1.4.4", features = ["fltk-bundled"] }
 fltk-table = "0.3.1"
 fltk-theme = "0.7.0"
 lazy_static = "1.4.0"
-rascam = "0.0.2"
+raspicam = "0.1.0"
 rppal = "0.14.1"
 serde = { version = "1.0.163", features = ["derive"] }
 serde_json = "1.0.96"
