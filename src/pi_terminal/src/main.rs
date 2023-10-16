@@ -10,6 +10,7 @@ use rppal::uart::{Parity, Uart};
 use std::error::Error;
 
 mod byte_size;
+mod camera;
 mod choice;
 
 // BCM pin numbering! Do not use physcial pin numbers.
