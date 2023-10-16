@@ -2,11 +2,28 @@ use fltk::{app, app::*, button::*, enums::*, frame::*, group::*, prelude::*, win
 use fltk_table::{SmartTable, TableOpts};
 use std::fs;
 use std::{cell::RefCell, rc::Rc};
+use rppal::gpio::Gpio;
+use rppal::i2c::I2c;
+use rppal::pwm::{Channel, Pwm};
+use rppal::spi::{Bus, Mode, SlaveSelect, Spi};
+use rppal::uart::{Parity, Uart};
+use std::error::Error;
 
 mod byte_size;
 mod choice;
 
+// BCM pin numbering! Do not use physcial pin numbers.
+const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 23;
+const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 23;
+const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 23;
+const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 23;
+const GPIO_RELAY_VACUUM: u8 = 23;
+const GPIO_RELAY_WATER: u8 = 23;
+
 fn main() {
+    let mut uart_horizontal_stepper = Uart::with_path("/dev/ttyAMA0", 115_200, Parity::None, 8, 1);
+    let mut uart_vertical_stepper = Uart::with_path("/dev/ttyAMA1",115_200, Parity::None, 8, 1);
+
     let app = app::App::default();
 
     let position_horizontal = Rc::new(RefCell::new(0));

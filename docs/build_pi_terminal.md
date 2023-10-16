@@ -20,6 +20,29 @@ reload shell
 sudo apt-get -y install libx11-dev libxext-dev libxft-dev libxinerama-dev \
 libxcursor-dev libxrender-dev libxfixes-dev libpango1.0-dev libgl1-mesa-dev libglu1-mesa-dev
 
+sudo apt install pkg-config libudev-dev
+
 git clone https://github.com/MediaKraken/MKAutoRipper
 
+# setup uart ports
+sudo nano /boot/config.txt
 
+# add following to bottom
+# enable serial interface
+enable_uart=1
+dtoverlay=uart0
+dtoverlay=uart1
+dtoverlay=uart2
+dtoverlay=uart3
+dtoverlay=uart4
+dtoverlay=uart5
+
+reboot and verify
+ls -al /dev/ttyAMA*
+
+           TXD    PIN  |  RXD      PIN  |  Communication Port
+uart0 :  GPIO 14    8  |  GPIO 15   10  |  /dev/ttyAMA0 
+uart1 :  GPIO 0    27  |  GPIO 1    28  |  /dev/ttyAMA1
+uart2 :  GPIO 4     7  |  GPIO 5    29  |  /dev/ttyAMA2
+uart3 :  GPIO 8    24  |  GPIO 9    21  |  /dev/ttyAMA3
+uart4 :  GPIO 12   32  |  GPIO 13   33  |  /dev/ttyAMA4
