@@ -221,7 +221,7 @@ fn main() {
     });
 
     button_snapshot.set_callback(move |_| {
-        // TODO take image via raspberry pi camera
+        camera::camera_take_image();
     });
 
     button_water.set_callback(move |_| {

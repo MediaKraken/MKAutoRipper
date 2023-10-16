@@ -3,6 +3,13 @@ use raspicam::image::settings::{CameraSettings, ImageSettings};
 use std::io::Error;
 use std::process::Output;
 
+// raspi-config
+//  3
+//  enable camera
+//  reboot
+// see if camera detectede
+// vcgencmd get_camera
+
 pub fn camera_take_image() {
     // Initialize camera settings with their default values.
     let camera_settings: CameraSettings = CameraSettings::default();
