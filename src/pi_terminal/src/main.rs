@@ -221,7 +221,7 @@ fn main() {
     });
 
     button_snapshot.set_callback(move |_| {
-        camera::camera_take_image();
+        let _result = camera::camera_take_image("~demo.png");
     });
 
     button_water.set_callback(move |_| {

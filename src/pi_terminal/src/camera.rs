@@ -1,25 +1,41 @@
-use raspicam::image::camera_operations::click_image;
-use raspicam::image::settings::{CameraSettings, ImageSettings};
-use std::io::Error;
-use std::process::Output;
+use std::process::{Command, Stdio};
 
-// raspi-config
+// raspi-config - do NOT do
 //  3
 //  enable camera
 //  reboot
 // see if camera detectede
 // vcgencmd get_camera
 
-pub fn camera_take_image() {
-    // Initialize camera settings with their default values.
-    let camera_settings: CameraSettings = CameraSettings::default();
+// raspi-config
+//  updated raspi-config
+// mine was two years old....
+//  sudo rpi-update
+//  sudo rpi-eeprom-update
 
-    // Initialize image settings with their default values.
-    let image_settings: ImageSettings = ImageSettings::default();
+// turn on i2c
+// libcamera-hello --list-cameras
+// grab image
+// libcamera-still -o test.jpg
+// works as this will allow ssh
+// libcamera-hello --qt-preview
+// libcamera-still -e png -o still-test.png -n
 
-    // Capture image using RaspberryPi's camera function.
-    let result: Result<Output, Error> = click_image(camera_settings, image_settings);
-
-    // Print the resultant output or check the clicked image in the default path[~/raspicam.jpg].
-    println!("{:?}", result);
+pub fn camera_take_image(
+    media_file: &str,
+) -> Result<String, std::io::Error> {
+    let output = Command::new("libcamera-still")
+        .args([
+            "-e",
+            "png",
+            "-o",
+            media_file,
+            "-n",
+            &media_file,
+        ])
+        .stdout(Stdio::piped())
+        .output()
+        .unwrap();
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    Ok(stdout)
 }

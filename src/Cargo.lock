@@ -292,7 +292,6 @@ dependencies = [
  "fltk-table",
  "fltk-theme",
  "lazy_static",
- "raspicam",
  "rppal",
  "serde",
  "serde_json",
@@ -323,12 +322,6 @@ checksum = "5267fca4496028628a95160fc423a33e8b2e6af8a5302579e322e4b520293cae"
 dependencies = [
  "proc-macro2",
 ]
-
-[[package]]
-name = "raspicam"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db9d5812039d2c606a7f981455b2823f915636014850286711d5fdde93ba51f7"
 
 [[package]]
 name = "ripper_client"
