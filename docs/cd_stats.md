@@ -1,0 +1,1 @@
+A standard compact disc measures 4.7 inches, or 120 millimeters (mm), across, is 1.2 mm thick, weighs between 15 grams and 20 grams, and has a capacity of 80 minutes of audio, or 650 megabytes (MB) to 700 MB of data.

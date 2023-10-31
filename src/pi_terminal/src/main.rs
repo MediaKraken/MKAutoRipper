@@ -12,14 +12,26 @@ use std::error::Error;
 mod byte_size;
 mod camera;
 mod choice;
+mod hardware_layout;
+mod gpio;
+mod servo;
+mod stepper;
 
 // BCM pin numbering! Do not use physcial pin numbers.
-const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 23;
-const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 23;
-const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 23;
-const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 23;
-const GPIO_RELAY_VACUUM: u8 = 23;
-const GPIO_RELAY_WATER: u8 = 23;
+const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 0;
+const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 0;
+const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 15;
+const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 14;
+
+const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 0;
+const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 0;
+const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 0;
+const GPIO_STEPPER_VERTICAL_PULSE: u8 = 0;
+
+const GPIO_RELAY_VACUUM: u8 = 0;
+const GPIO_RELAY_LIGHT: u8 = 0;
+const GPIO_RELAY_WATER: u8 = 0;
+
 
 fn main() {
     let mut uart_horizontal_stepper = Uart::with_path("/dev/ttyAMA0", 115_200, Parity::None, 8, 1);
@@ -187,14 +199,14 @@ fn main() {
                 "Horiz: {}",
                 &position_horizontal.borrow().to_string()
             ));
+            let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_HORIZONTAL_PULSE, GPIO_STEPPER_HORIZONTAL_DIRECTION, true);
         }
-        // TODO move arm
     });
 
     button_left.set_callback(move |_| {
         *position_horizontal.borrow_mut() -= 1;
         frame_position_horizontal.set_label(&format!("Horiz: {}", &position_horizontal.borrow()));
-        // TODO move arm
+        let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_HORIZONTAL_PULSE, GPIO_STEPPER_HORIZONTAL_DIRECTION, false);
     });
 
     button_up.set_callback({
@@ -206,14 +218,14 @@ fn main() {
                 "Vert: {}",
                 &position_vertical.borrow().to_string()
             ));
+            let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_VERTICAL_PULSE, GPIO_STEPPER_VERTICAL_DIRECTION, true);
         }
-        // TODO move arm
     });
 
     button_down.set_callback(move |_| {
         *position_vertical.borrow_mut() -= 1;
         frame_position_vertical.set_label(&format!("Vert: {}", &position_vertical.borrow()));
-        // TODO move arm
+        let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_VERTICAL_PULSE, GPIO_STEPPER_VERTICAL_DIRECTION, false);
     });
 
     button_vacuum.set_callback(move |_| {

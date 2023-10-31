@@ -18,11 +18,13 @@ curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh
 reload shell
 
 sudo apt-get -y install libx11-dev libxext-dev libxft-dev libxinerama-dev \
-libxcursor-dev libxrender-dev libxfixes-dev libpango1.0-dev libgl1-mesa-dev libglu1-mesa-dev
-
-sudo apt install pkg-config libudev-dev
+libxcursor-dev libxrender-dev libxfixes-dev libpango1.0-dev libgl1-mesa-dev \
+libglu1-mesa-dev pkg-config libudev-dev
 
 git clone https://github.com/MediaKraken/MKAutoRipper
+
+
+# actually since i'm not talking over usb/serial, do I need to do this?
 
 # setup uart ports
 sudo nano /boot/config.txt
