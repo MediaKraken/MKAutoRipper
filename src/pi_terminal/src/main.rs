@@ -1,19 +1,19 @@
 use fltk::{app, app::*, button::*, enums::*, frame::*, group::*, prelude::*, window::*};
 use fltk_table::{SmartTable, TableOpts};
-use std::fs;
-use std::{cell::RefCell, rc::Rc};
 use rppal::gpio::Gpio;
 use rppal::i2c::I2c;
 use rppal::pwm::{Channel, Pwm};
 use rppal::spi::{Bus, Mode, SlaveSelect, Spi};
 use rppal::uart::{Parity, Uart};
 use std::error::Error;
+use std::fs;
+use std::{cell::RefCell, rc::Rc};
 
 mod byte_size;
 mod camera;
 mod choice;
-mod hardware_layout;
 mod gpio;
+mod hardware_layout;
 mod servo;
 mod stepper;
 
@@ -32,10 +32,9 @@ const GPIO_RELAY_VACUUM: u8 = 0;
 const GPIO_RELAY_LIGHT: u8 = 0;
 const GPIO_RELAY_WATER: u8 = 0;
 
-
 fn main() {
-    let mut uart_horizontal_stepper = Uart::with_path("/dev/ttyAMA0", 115_200, Parity::None, 8, 1);
-    let mut uart_vertical_stepper = Uart::with_path("/dev/ttyAMA1",115_200, Parity::None, 8, 1);
+    // let mut uart_horizontal_stepper = Uart::with_path("/dev/ttyAMA0", 115_200, Parity::None, 8, 1);
+    // let mut uart_vertical_stepper = Uart::with_path("/dev/ttyAMA1",115_200, Parity::None, 8, 1);
 
     let app = app::App::default();
 
@@ -168,10 +167,14 @@ fn main() {
 
     // move the arms around
     let mut button_zero = Button::new(400, 15, 150, 50, "Zero Everything");
-    let mut button_left = Button::new(625, 100, 50, 50, "Left");
-    let mut button_up = Button::new(675, 75, 50, 50, "Up");
-    let mut button_down = Button::new(675, 125, 50, 50, "Down");
-    let mut button_right = Button::new(725, 100, 50, 50, "Right");
+    let mut button_left = Button::new(625, 100, 25, 50, "L");
+    let mut button_left_full_rotation = Button::new(650, 100, 25, 50, "L F");
+    let mut button_up = Button::new(675, 75, 25, 50, "U");
+    let mut button_up_full_rotation = Button::new(700, 75, 25, 50, "U F");
+    let mut button_down = Button::new(675, 125, 25, 50, "D");
+    let mut button_down_full_rotation = Button::new(700, 125, 25, 50, "D F");
+    let mut button_right = Button::new(725, 100, 25, 50, "R");
+    let mut button_right_full_rotation = Button::new(750, 100, 25, 50, "R F");
 
     // activate equipment
     let mut button_vacuum = Button::new(620, 180, 80, 50, "Vacuum");
@@ -199,14 +202,63 @@ fn main() {
                 "Horiz: {}",
                 &position_horizontal.borrow().to_string()
             ));
-            let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_HORIZONTAL_PULSE, GPIO_STEPPER_HORIZONTAL_DIRECTION, true);
+            let _result = stepper::gpio_stepper_move(
+                1,
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                true,
+            );
         }
     });
 
-    button_left.set_callback(move |_| {
-        *position_horizontal.borrow_mut() -= 1;
-        frame_position_horizontal.set_label(&format!("Horiz: {}", &position_horizontal.borrow()));
-        let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_HORIZONTAL_PULSE, GPIO_STEPPER_HORIZONTAL_DIRECTION, false);
+    button_right_full_rotation.set_callback({
+        let position_horizontal = position_horizontal.clone();
+        let mut frame_position_horizontal = frame_position_horizontal.clone();
+        move |_| {
+            *position_horizontal.borrow_mut() += 200;
+            frame_position_horizontal.set_label(&format!(
+                "Horiz: {}",
+                &position_horizontal.borrow().to_string()
+            ));
+            let _result = stepper::gpio_stepper_move(
+                200,
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                true,
+            );
+        }
+    });
+
+    button_left.set_callback({
+        let position_horizontal = position_horizontal.clone();
+        let mut frame_position_horizontal = frame_position_horizontal.clone();
+        move |_| {
+            *position_horizontal.borrow_mut() -= 1;
+            frame_position_horizontal
+                .set_label(&format!("Horiz: {}", &position_horizontal.borrow()));
+            let _result = stepper::gpio_stepper_move(
+                1,
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                false,
+            );
+        }
+    });
+
+    button_left_full_rotation.set_callback({
+        let position_horizontal = position_horizontal.clone();
+        let mut frame_position_horizontal = frame_position_horizontal.clone();
+        move |_| {
+            *position_horizontal.borrow_mut() -= 200;
+            frame_position_horizontal
+                .set_label(&format!("Horiz: {}", &position_horizontal.borrow()));
+            let _result = stepper::gpio_stepper_move(
+                200,
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                false,
+            );
+        }
     });
 
     button_up.set_callback({
@@ -218,14 +270,61 @@ fn main() {
                 "Vert: {}",
                 &position_vertical.borrow().to_string()
             ));
-            let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_VERTICAL_PULSE, GPIO_STEPPER_VERTICAL_DIRECTION, true);
+            let _result = stepper::gpio_stepper_move(
+                1,
+                GPIO_STEPPER_VERTICAL_PULSE,
+                GPIO_STEPPER_VERTICAL_DIRECTION,
+                true,
+            );
         }
     });
 
-    button_down.set_callback(move |_| {
-        *position_vertical.borrow_mut() -= 1;
-        frame_position_vertical.set_label(&format!("Vert: {}", &position_vertical.borrow()));
-        let _result = stepper::gpio_stepper_move(1, GPIO_STEPPER_VERTICAL_PULSE, GPIO_STEPPER_VERTICAL_DIRECTION, false);
+    button_up_full_rotation.set_callback({
+        let position_vertical = position_vertical.clone();
+        let mut frame_position_vertical = frame_position_vertical.clone();
+        move |_| {
+            *position_vertical.borrow_mut() += 200;
+            frame_position_vertical.set_label(&format!(
+                "Vert: {}",
+                &position_vertical.borrow().to_string()
+            ));
+            let _result = stepper::gpio_stepper_move(
+                200,
+                GPIO_STEPPER_VERTICAL_PULSE,
+                GPIO_STEPPER_VERTICAL_DIRECTION,
+                true,
+            );
+        }
+    });
+
+    button_down.set_callback({
+        let position_vertical = position_vertical.clone();
+        let mut frame_position_vertical = frame_position_vertical.clone();
+        move |_| {
+            *position_vertical.borrow_mut() -= 1;
+            frame_position_vertical.set_label(&format!("Vert: {}", &position_vertical.borrow()));
+            let _result = stepper::gpio_stepper_move(
+                1,
+                GPIO_STEPPER_VERTICAL_PULSE,
+                GPIO_STEPPER_VERTICAL_DIRECTION,
+                false,
+            );
+        }
+    });
+
+    button_down_full_rotation.set_callback({
+        let position_vertical = position_vertical.clone();
+        let mut frame_position_vertical = frame_position_vertical.clone();
+        move |_| {
+            *position_vertical.borrow_mut() -= 200;
+            frame_position_vertical.set_label(&format!("Vert: {}", &position_vertical.borrow()));
+            let _result = stepper::gpio_stepper_move(
+                200,
+                GPIO_STEPPER_VERTICAL_PULSE,
+                GPIO_STEPPER_VERTICAL_DIRECTION,
+                false,
+            );
+        }
     });
 
     button_vacuum.set_callback(move |_| {

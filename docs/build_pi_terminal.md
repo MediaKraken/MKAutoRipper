@@ -24,6 +24,44 @@ libglu1-mesa-dev pkg-config libudev-dev
 git clone https://github.com/MediaKraken/MKAutoRipper
 
 
+
+# cross compile experiment - mkcode
+apt install gcc-arm-linux-gnueabihf
+rustup target add armv7-unknown-linux-gnueabihf aarch64-unknown-linux-gnu
+export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=/usr/bin/arm-linux-gnueabihf-gcc
+cargo build --target=armv7-unknown-linux-gnueabihf
+cargo build --target=aarch64-unknown-linux-gnu
+cross build --target aarch64-unknown-linux-gnu
+# https://users.rust-lang.org/t/cross-compiling-arm/96456/3
+dpkg --add-architecture aarch64
+
+
+apt-get install gcc-aarch64-linux-gnu
+
+apt-get install --assume-yes --no-install-recommends \
+    libx11-dev:aarch64 libxrandr-dev:aarch64 libasound2-dev:aarch64 \
+    libx11-dev:aarch64 libxrandr-dev:aarch64 libxi-dev:aarch64 \
+    libgl1-mesa-dev:aarch64 libglu1-mesa-dev:aarch64 \
+    libxcursor-dev:aarch64 libxinerama-dev:aarch64
+
+
+apt-get install --assume-yes --no-install-recommends \
+    libx11-dev:arm64 libxrandr-dev:arm64 libasound2-dev:arm64 \
+    libx11-dev:arm64 libxrandr-dev:arm64 libxi-dev:arm64 \
+    libgl1-mesa-dev:arm64 libglu1-mesa-dev:arm64 \
+    libxcursor-dev:arm64 libxinerama-dev:arm64
+cross build --target arm64-unknown-linux-gnu
+
+ln -s /usr/lib/gcc-cross/aarch64-linux-gnu/12 /usr/lib/gcc-cross/aarch64-linux-gnu/5
+cd /usr/lib/gcc-cross/aarch64-linux-gnu/5/../../../../aarch64-linux-gnu/bin
+
+apt install g++-arm-linux-gnueabihf libc6-dev-armhf-cross
+cross build --target=armv7-unknown-linux-gnueabihf
+    # this doesn't work as cfltk doesn't have a armv7 version
+
+cross build --target aarch64-unknown-linux-gnu
+    # this doesn't work as x11 doesn't have an aarch64 version
+
 # actually since i'm not talking over usb/serial, do I need to do this?
 
 # setup uart ports
