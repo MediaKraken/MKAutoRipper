@@ -18,24 +18,21 @@ mod servo;
 mod stepper;
 
 // BCM pin numbering! Do not use physcial pin numbers.
-const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 0;
-const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 0;
+const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 5;
+const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 6;
 const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 15;
 const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 14;
 
-const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 0;
-const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 0;
-const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 0;
-const GPIO_STEPPER_VERTICAL_PULSE: u8 = 0;
+const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 26;
+const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 19;
+const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 21;
+const GPIO_STEPPER_VERTICAL_PULSE: u8 = 20;
 
-const GPIO_RELAY_VACUUM: u8 = 0;
-const GPIO_RELAY_LIGHT: u8 = 0;
-const GPIO_RELAY_WATER: u8 = 0;
+const GPIO_RELAY_VACUUM: u8 = 22;
+const GPIO_RELAY_LIGHT: u8 = 27;
+const GPIO_RELAY_WATER: u8 = 17;
 
 fn main() {
-    // let mut uart_horizontal_stepper = Uart::with_path("/dev/ttyAMA0", 115_200, Parity::None, 8, 1);
-    // let mut uart_vertical_stepper = Uart::with_path("/dev/ttyAMA1",115_200, Parity::None, 8, 1);
-
     let app = app::App::default();
 
     let position_horizontal = Rc::new(RefCell::new(0));
@@ -206,6 +203,7 @@ fn main() {
                 1,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 true,
             );
         }
@@ -224,6 +222,7 @@ fn main() {
                 200,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 true,
             );
         }
@@ -240,6 +239,7 @@ fn main() {
                 1,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                 false,
             );
         }
@@ -256,6 +256,7 @@ fn main() {
                 200,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                 false,
             );
         }
@@ -274,6 +275,7 @@ fn main() {
                 1,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
+                GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                 true,
             );
         }
@@ -292,6 +294,7 @@ fn main() {
                 200,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
+                GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                 true,
             );
         }
@@ -307,6 +310,7 @@ fn main() {
                 1,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
+                GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
                 false,
             );
         }
@@ -322,6 +326,7 @@ fn main() {
                 200,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
+                GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
                 false,
             );
         }

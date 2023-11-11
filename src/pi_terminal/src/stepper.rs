@@ -8,6 +8,7 @@ pub fn gpio_stepper_move(
     steps_to_take: u64,
     pulse_pin_number: u8,
     direction_pin_number: u8,
+    hard_stop_pin_number: u8,
     move_clockwise: bool,
 ) -> Result<(), Box<dyn Error>> {
     let gpios = match Gpio::new() {
@@ -23,6 +24,10 @@ pub fn gpio_stepper_move(
         Ok(stepper_direction_output) => stepper_direction_output.into_output(),
         Err(msg) => panic!("Error: {}", msg),
     };
+    // Retrieve a Pin without converting it to an InputPin,
+    // OutputPin or IoPin, so we can check the pin's mode
+    // and level without affecting its state.
+    let pin = gpios.get(hard_stop_pin_number)?;
     // set direction
     if move_clockwise {
         stepper_direction_output.set_high();
@@ -35,7 +40,11 @@ pub fn gpio_stepper_move(
         thread::sleep(Duration::from_micros(500));
         stepper_pulse_output.set_low();
         thread::sleep(Duration::from_micros(500));
-        // TODO check for hardstops
+        // Check for hardstops
+        let pin_value = pin.read() as u8;
+        if pin_value > 0 {
+            break;
+        }
     }
     Ok(())
 }
