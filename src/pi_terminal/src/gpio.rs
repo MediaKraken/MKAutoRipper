@@ -2,7 +2,7 @@ use rppal::gpio::Gpio;
 use std::error::Error;
 
 // Gpio uses BCM pin numbering.
-fn gpio_set_pin(set_high: bool, pin_number: u8) -> Result<(), Box<dyn Error>> {
+pub fn gpio_set_pin(set_high: bool, pin_number: u8) -> Result<(), Box<dyn Error>> {
     // create the GPIO object (mutable as we want to change the output)
     let gpios = match Gpio::new() {
         Ok(gpios) => gpios,

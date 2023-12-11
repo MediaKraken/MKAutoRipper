@@ -10,7 +10,8 @@ pub fn gpio_stepper_move(
     direction_pin_number: u8,
     hard_stop_pin_number: u8,
     move_clockwise: bool,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<i32, Box<dyn Error>> {
+    let mut steps_moved: i32 = 0; 
     let gpios = match Gpio::new() {
         Ok(gpios) => gpios,
         Err(msg) => panic!("Error: {}", msg),
@@ -36,15 +37,17 @@ pub fn gpio_stepper_move(
     }
     // move the number of steps
     for _step_num in 0..steps_to_take {
+        steps_moved += 1;
         stepper_pulse_output.set_high();
         thread::sleep(Duration::from_micros(500));
         stepper_pulse_output.set_low();
         thread::sleep(Duration::from_micros(500));
+        // TODO https://roboticsbackend.com/raspberry-pi-gpios-default-state/
         // Check for hardstops
         let pin_value = pin.read() as u8;
         if pin_value > 0 {
             break;
         }
     }
-    Ok(())
+    Ok(steps_moved)
 }
