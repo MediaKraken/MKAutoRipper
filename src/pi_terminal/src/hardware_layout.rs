@@ -1,5 +1,3 @@
-use lazy_static::lazy_static;
-
 pub const DRIVETYPE_NONE: &str = "None";
 pub const DRIVETYPE_CD: &str = "CD";
 pub const DRIVETYPE_DVD: &str = "DVD";
@@ -8,9 +6,9 @@ pub const DRIVETYPE_UHD: &str = "UHD";
 pub const DRIVETYPE_HDDVD: &str = "HDDVD";
 
 // these "locations" are ticks from 0 for the movement arm
-pub const INPUT_SPINDLE_LOCATIONS: [u16; 4] = [0, 200, 400, 600];
-pub const OUTPUT_SPINDLE_LOCATIONS: [u16; 4] = [1000, 1200, 1400, 1600];
-pub const CAMERA_LOCATION: (u16, u16) = (500, 1500);
+pub const INPUT_SPINDLE_LOCATIONS: [u64; 4] = [0, 200, 400, 600];
+pub const OUTPUT_SPINDLE_LOCATIONS: [u64; 4] = [1000, 1200, 1400, 1600];
+pub const CAMERA_LOCATION: (u64, u64) = (500, 1500);
 
 /*
 u8 has the max value of 255

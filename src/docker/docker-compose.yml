@@ -1,0 +1,44 @@
+---
+version: '3.8'
+# Volumes are HOST directory and then CONTAINER directory
+
+services:
+  ripper1:
+    image: mediakraken/mkripper:${BRANCH}
+    environment:
+      - WAIT_HOSTS=rabbitmq:5672
+      - WAIT_TIMEOUT=180
+    command: sh -c "/wait && /ripper"
+    devices:
+      - '/dev/sr0:/dev/sr0'
+    privileged: true 
+    stop_grace_period: 30s
+    stop_signal: SIGUSR1
+    networks:
+      - mkautoripper_network
+
+
+  rabbitmq:
+    image: mediakraken/mkrabbitmq:${BRANCH}
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_IO_THREAD_POOL_SIZE=256
+    stop_grace_period: 30s
+    stop_signal: SIGTERM
+    ports:
+      - "5672:5672"  # for testing only!!!
+      # https management port
+      # - "15671:15671"
+      # http management port
+      - "15672:15672"
+    networks:
+      - mkautoripper_network
+
+# Docker private networks
+networks:
+  mkautoripper_network:
+    driver: overlay
+
+volumes:
+  mkautoripper_vol_database:

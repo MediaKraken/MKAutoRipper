@@ -662,7 +662,7 @@ async fn main() {
                 // send eject rabbitmq message
                 rabbitmq::rabbitmq_publish(
                     rabbit_channel.clone(),
-                    json_message["Drive_Num"].as_str().unwrap(),
+                    json_message["Instance"].as_str().unwrap(),
                     "Eject".to_string(),
                 )
                 .await
@@ -672,16 +672,74 @@ async fn main() {
                 // TODO place arm for media pickup
                 // pick up media
                 let _result = gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
+                // send rabbitmq message to close tray
+                rabbitmq::rabbitmq_publish(
+                    rabbit_channel.clone(),
+                    json_message["Instance"].as_str().unwrap(),
+                    "Close".to_string(),
+                )
+                .await
+                .unwrap();
+                // TODO raise arm if needed
                 // TODO place media at exit spindle
                 // drop media
                 let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
             }
         }
         // process next disc
-        if spindle_one_media_left {}
-        if spindle_two_media_left {}
-        if spindle_three_media_left {}
-        if spindle_four_media_left {}
+        if spindle_one_media_left {
+            // TODO do I zero first or do math?
+            let steps_taken = stepper::gpio_stepper_move(
+                hardware_layout::INPUT_SPINDLE_LOCATIONS[0],
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                true,
+            );
+            *position_horizontal.borrow_mut() += steps_taken.unwrap();
+            if *position_vertical.borrow() >= 0 {
+                let _result = gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
+                // TODO determine usable drive
+                // TODO position arm
+                // TODO rabbitmq open
+                // TODO sleep
+                // TODO position
+                let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
+                // TODO rabbitmq close/start rip
+            } else {
+                spindle_one_media_left = false;
+            }
+        }
+        if spindle_two_media_left {
+            // TODO do I zero first or do math?
+            let steps_taken = stepper::gpio_stepper_move(
+                hardware_layout::INPUT_SPINDLE_LOCATIONS[1],
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                true,
+            );
+        }
+        if spindle_three_media_left {
+            // TODO do I zero first or do math?
+            let steps_taken = stepper::gpio_stepper_move(
+                hardware_layout::INPUT_SPINDLE_LOCATIONS[2],
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                true,
+            );
+        }
+        if spindle_four_media_left {
+            // TODO do I zero first or do math?
+            let steps_taken = stepper::gpio_stepper_move(
+                hardware_layout::INPUT_SPINDLE_LOCATIONS[3],
+                GPIO_STEPPER_HORIZONTAL_PULSE,
+                GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                true,
+            );
+        }
         sleep(Duration::from_secs(1)).await;
     }
     //    });
