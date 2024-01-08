@@ -43,17 +43,17 @@ WORKDIR /mediakraken
 ADD https://www.makemkv.com/download/makemkv-bin-1.17.5.tar.gz /mediakraken/.
 ADD https://www.makemkv.com/download/makemkv-oss-1.17.5.tar.gz /mediakraken/.
 
-RUN tar -xvzf /mediakraken/makemkv-bin*  
-RUN tar -xvzf /mediakraken/makemkv-oss*
-
-RUN apt-get update && apt-get install -y \
-  build-essential pkg-config libc6-dev libssl-dev libexpat1-dev libavcodec-dev libgl1-mesa-dev qtbase5-dev zlib1g-dev \
+# qtbase5-dev
+RUN tar -xvzf /mediakraken/makemkv-bin* \
+  && tar -xvzf /mediakraken/makemkv-oss* \
+  && apt-get update && apt-get install -y \
+  build-essential pkg-config libc6-dev libssl-dev libexpat1-dev libavcodec-dev libgl1-mesa-dev zlib1g-dev \
   abcde \
   libcdparanoia0 \
   less coreutils \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN cd /mediakraken/makemkv-oss-1.17.5 && yes accept | ./configure --disable-gui && make -j8 && make install
-RUN sed -i '2i exit 0;' /mediakraken/makemkv-bin-1.17.5/src/ask_eula.sh
-RUN cd /mediakraken/makemkv-bin-1.17.5 && make -j8 && make install
+  && rm -rf /var/lib/apt/lists/* \
+  && cd /mediakraken/makemkv-oss-1.17.5 && yes accept | ./configure --disable-gui && make -j`getconf _NPROCESSORS_ONLN` && make install \
+  && sed -i '2i exit 0;' /mediakraken/makemkv-bin-1.17.5/src/ask_eula.sh \
+  && cd /mediakraken/makemkv-bin-1.17.5 && make -j`getconf _NPROCESSORS_ONLN` && make install \
+  && rm -Rf /mediakraken/makemkv-*
  
