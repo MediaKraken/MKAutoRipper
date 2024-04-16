@@ -1,0 +1,1 @@
+Fan__60mm.STL is by leaftye (https://www.thingiverse.com/leaftye) is licensed under the Creative Commons - Attribution license
