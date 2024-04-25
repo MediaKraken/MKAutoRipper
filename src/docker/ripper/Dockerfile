@@ -40,8 +40,11 @@ COPY --from=cargo-build-mkripper /wait /wait
 COPY --from=cargo-build-mkripper /mediakraken/target/mkripper /mkripper
 
 WORKDIR /mediakraken
-ADD https://www.makemkv.com/download/makemkv-bin-1.17.6.tar.gz /mediakraken/.
-ADD https://www.makemkv.com/download/makemkv-oss-1.17.6.tar.gz /mediakraken/.
+
+ARG MAKEMKV=1.17.6
+
+ADD https://www.makemkv.com/download/makemkv-bin-${MAKEMKV}.tar.gz /mediakraken/.
+ADD https://www.makemkv.com/download/makemkv-oss-${MAKEMKV}.tar.gz /mediakraken/.
 
 # qtbase5-dev
 RUN tar -xvzf /mediakraken/makemkv-bin* \
@@ -52,8 +55,8 @@ RUN tar -xvzf /mediakraken/makemkv-bin* \
   libcdparanoia0 \
   less coreutils \
   && rm -rf /var/lib/apt/lists/* \
-  && cd /mediakraken/makemkv-oss-1.17.6 && yes accept | ./configure --disable-gui && make -j`getconf _NPROCESSORS_ONLN` && make install \
-  && sed -i '2i exit 0;' /mediakraken/makemkv-bin-1.17.6/src/ask_eula.sh \
-  && cd /mediakraken/makemkv-bin-1.17.6 && make -j`getconf _NPROCESSORS_ONLN` && make install \
+  && cd /mediakraken/makemkv-oss-${MAKEMKV} && yes accept | ./configure --disable-gui && make -j`getconf _NPROCESSORS_ONLN` && make install \
+  && sed -i '2i exit 0;' /mediakraken/makemkv-bin-${MAKEMKV}/src/ask_eula.sh \
+  && cd /mediakraken/makemkv-bin-${MAKEMKV} && make -j`getconf _NPROCESSORS_ONLN` && make install \
   && rm -Rf /mediakraken/makemkv-*
  
