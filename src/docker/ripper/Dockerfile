@@ -52,6 +52,8 @@ RUN tar -xvzf /mediakraken/makemkv-bin* \
   && apt-get update && apt-get install -y \
   build-essential pkg-config libc6-dev libssl-dev libexpat1-dev libavcodec-dev libgl1-mesa-dev zlib1g-dev \
   abcde \
+  flac \
+  cd-discid \
   libcdparanoia0 \
   less coreutils \
   && rm -rf /var/lib/apt/lists/* \
