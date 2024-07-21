@@ -41,7 +41,7 @@ COPY --from=cargo-build-mkripper /mediakraken/target/mkripper /mkripper
 
 WORKDIR /mediakraken
 
-ARG MAKEMKV=1.17.6
+ARG MAKEMKV=1.17.7
 
 ADD https://www.makemkv.com/download/makemkv-bin-${MAKEMKV}.tar.gz /mediakraken/.
 ADD https://www.makemkv.com/download/makemkv-oss-${MAKEMKV}.tar.gz /mediakraken/.

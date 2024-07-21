@@ -52,6 +52,3 @@ services:
 networks:
   mkautoripper_network:
     driver: overlay
-
-volumes:
-  mkautoripper_vol_database:
