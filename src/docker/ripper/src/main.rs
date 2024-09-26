@@ -8,6 +8,7 @@ use tokio::sync::Notify;
 use tokio::time::{sleep, Duration};
 mod rabbit;
 use std::process;
+use std::ffi::OsStr;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -56,14 +57,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 } else if json_message["Type"] == "stop" {
                     // stop rip
                     let s = System::new_all();
-                    for process in s.processes_by_name("makemkvcon") {
+                    for process in s.processes_by_name(OsStr::new("makemkvcon")) {
                         if let Some(process) = s.process(process.pid()) {
                             if process.kill_with(Signal::Kill).is_none() {
                                 println!("This signal isn't supported on this platform");
                             }
                         }
                     }
-                    for process in s.processes_by_name("abcde") {
+                    for process in s.processes_by_name(OsStr::new("abcde")) {
                         if let Some(process) = s.process(process.pid()) {
                             if process.kill_with(Signal::Kill).is_none() {
                                 println!("This signal isn't supported on this platform");

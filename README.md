@@ -3,24 +3,21 @@ Code/models/etc for Media Auto Ripper hardware
 
 debian on main box for ease of makemkv and eject commands
 
-server listens via twisted
-
 raspberry pi will run the show telling server when cd's should load
-
-will also tell the ardionos to do their jobs via usb hub
-
-just crossover cable/adapter
 
 **********************************
 
 Horizontal stepper - moves entire arm assembly on tracks left/right
 vertical stepper - moves arm assembly on track up/down
+photo stepper = moves platform back and forth for photos of media
 
 spinner stepper - rotates cd for buffing
 
 buffer stepper - rotates buffing wheel
 
 relay - vacuum pump to hold disc
+relay - led for disk image photo
+
 relay - water pump to cool/wash disc
 
 ********************

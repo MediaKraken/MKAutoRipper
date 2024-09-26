@@ -23,7 +23,7 @@ rppal = "0.19.0"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 sqlite = "0.36.1"
-syact = { version = "0.13.7", features = ["rasp"] }
+syact = "0.13.7"
 sys-info = "0.9.1"
 tokio = { version = "1.40.0", features = ["full"] }
 
