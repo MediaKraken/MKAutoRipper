@@ -43,6 +43,7 @@ const GPIO_RELAY_WATER: u8 = 17;
 
 #[tokio::main]
 async fn main() {
+    // drive number, allowed media types, horizontal, vertical, in use
     let mut drive_layout: Vec<(u16, Vec<&str>, u16, u16, bool)> = vec![
         // bottom row of drives
         (
@@ -180,17 +181,16 @@ async fn main() {
         // 6th row of drives
         (20, vec![hardware_layout::DRIVETYPE_BRAY], 600, 100, false),
         (21, vec![hardware_layout::DRIVETYPE_BRAY], 600, 200, false),
-        (22, vec![hardware_layout::DRIVETYPE_BRAY], 600, 300, false),
+        (22, vec![hardware_layout::DRIVETYPE_UHD], 600, 300, false),
         (23, vec![hardware_layout::DRIVETYPE_UHD], 600, 400, false),
         // top row of drives
         (24, vec![hardware_layout::DRIVETYPE_HDDVD], 700, 150, false),
-        (25, vec![hardware_layout::DRIVETYPE_HDDVD], 700, 300, false),
     ];
     // connect to database
     // let db_pool = database::database_open().unwrap();
     let (_rabbit_connection, rabbit_channel) =
-        rabbitmq::rabbitmq_connect("mkaterminal").await.unwrap();
-    let mut rabbit_consumer = rabbitmq::rabbitmq_consumer("mkaterminal", &rabbit_channel)
+        rabbitmq::rabbitmq_connect("mkterminal").await.unwrap();
+    let mut rabbit_consumer = rabbitmq::rabbitmq_consumer("mkterminal", &rabbit_channel)
         .await
         .unwrap();
     let mut hard_stop: bool = false;
@@ -638,16 +638,16 @@ async fn main() {
             break;
         }
         if initial_start {
-            if choice_spindle_1_media_type.choice() != "None" {
+            if choice_spindle_1_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
                 spindle_one_media_left = true;
             }
-            if choice_spindle_2_media_type.choice() != "None" {
+            if choice_spindle_2_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
                 spindle_two_media_left = true;
             }
-            if choice_spindle_3_media_type.choice() != "None" {
+            if choice_spindle_3_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
                 spindle_three_media_left = true;
             }
-            if choice_spindle_4_media_type.choice() != "None" {
+            if choice_spindle_4_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
                 spindle_four_media_left = true;
             }
             initial_start = false;
@@ -688,26 +688,43 @@ async fn main() {
         }
         // process next disc
         if spindle_one_media_left {
-            // TODO do I zero first or do math?
-            let steps_taken = stepper::gpio_stepper_move(
-                hardware_layout::INPUT_SPINDLE_LOCATIONS[0],
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
-                true,
-            );
-            *position_horizontal.borrow_mut() += steps_taken.unwrap();
-            if *position_vertical.borrow() >= 0 {
-                let _result = gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
-                // TODO determine usable drive
-                // TODO position arm
-                // TODO rabbitmq open
-                // TODO sleep
-                // TODO position
-                let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
-                // TODO rabbitmq close/start rip
-            } else {
-                spindle_one_media_left = false;
+            // determine usable drive
+            for individual_drive in drive_layout.iter() {
+                // check to see if the drive is in use
+                if individual_drive.4 == false {
+                    // check to see if the drive has the proper media capability
+                    if individual_drive
+                        .1
+                        .contains(&choice_spindle_1_media_type.choice().as_str())
+                    {
+                        // TODO raise the vertical to above the spindle
+                        // TODO zero out the horizontal
+                        // move horizontal to spindle one location
+                        let steps_taken = stepper::gpio_stepper_move(
+                            hardware_layout::INPUT_SPINDLE_LOCATIONS[0],
+                            GPIO_STEPPER_HORIZONTAL_PULSE,
+                            GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                            GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                            true,
+                        );
+                        *position_horizontal.borrow_mut() += steps_taken.unwrap();
+                        // TODO lower verticle to stop switch on assembly
+                        // TODO if spindle stop switch triggers, turn off media switch and break
+                        if *position_vertical.borrow() >= 0 {
+                            let _result = gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
+                            // TODO raise verticle to above the spindle
+                            // TODO rabbitmq open
+                            // allow time to open tray
+                            sleep(Duration::from_secs(5)).await;
+                            // TODO position
+                            let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
+                            // TODO rabbitmq close/start rip
+                        } else {
+                            spindle_one_media_left = false;
+                            break;
+                        }
+                    }
+                }
             }
         }
         if spindle_two_media_left {
