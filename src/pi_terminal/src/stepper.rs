@@ -5,7 +5,7 @@ use std::time::Duration;
 
 // Gpio uses BCM pin numbering.
 pub fn gpio_stepper_move(
-    steps_to_take: u64,
+    steps_to_take: i32,
     pulse_pin_number: u8,
     direction_pin_number: u8,
     hard_stop_pin_number: u8,

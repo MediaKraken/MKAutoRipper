@@ -265,9 +265,9 @@ checksum = "361a90feb7004eca4019fb28352a9465666b24f840f5c3cddf0ff13920590b89"
 
 [[package]]
 name = "fltk"
-version = "1.4.33"
+version = "1.4.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "282d3f9b20cb53f0d468790cdaf7ae28d9128ad52caea5ba1e57fd63e571c081"
+checksum = "f8f81f9ebf85aeaad76e43362cc2bb1d926e5daca1327dc0a094d00c86a95ebb"
 dependencies = [
  "bitflags 2.4.1",
  "crossbeam-channel",
@@ -279,9 +279,9 @@ dependencies = [
 
 [[package]]
 name = "fltk-sys"
-version = "1.4.33"
+version = "1.4.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8cab52e0e3abc6be8c9ea81bb7aa7887f1650198c3fc4464c5a59ac996d126d3"
+checksum = "30bbe32c3f9f72469e2cf2a62edc74ef990b81c2caf082f53fd67060ce0c9893"
 dependencies = [
  "cmake",
 ]
@@ -309,6 +309,17 @@ name = "futures-core"
 version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eb1d22c66e66d9d72e1758f0bd7d4fd0bee04cad842ee34587d68c07e45d088c"
+
+[[package]]
+name = "getrandom"
+version = "0.2.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94b22e06ecb0110981051723910cbf0b5f5e09a2062dd7663334ee79a9d1286c"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi",
+]
 
 [[package]]
 name = "gimli"
@@ -515,6 +526,7 @@ dependencies = [
  "sys-info",
  "tokio",
  "tokio-test",
+ "uuid",
 ]
 
 [[package]]
@@ -865,6 +877,16 @@ name = "unicode-ident"
 version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b"
+
+[[package]]
+name = "uuid"
+version = "1.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81dfa00651efa65069b0b6b651f4aaa31ba9e3c3ce0137aaad053604ee7e0314"
+dependencies = [
+ "getrandom",
+ "serde",
+]
 
 [[package]]
 name = "wasi"
