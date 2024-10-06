@@ -12,7 +12,7 @@ use std::process;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let (_rabbit_connection, rabbit_channel) = rabbit::rabbitmq_connect("ripper").await.unwrap();
+    let (_rabbit_connection, rabbit_channel) = rabbit::rabbitmq_connect("mkautoripper").await.unwrap();
     let mut rabbit_consumer = rabbit::rabbitmq_consumer("ripper", &rabbit_channel)
         .await
         .unwrap();

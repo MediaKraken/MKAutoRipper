@@ -191,7 +191,7 @@ async fn main() {
     // connect to database
     // let db_pool = database::database_open().unwrap();
     let (_rabbit_connection, rabbit_channel) =
-        rabbitmq::rabbitmq_connect("mkterminal").await.unwrap();
+        rabbitmq::rabbitmq_connect("mkautoripper").await.unwrap();
     let mut rabbit_consumer = rabbitmq::rabbitmq_consumer("mkterminal", &rabbit_channel)
         .await
         .unwrap();
