@@ -7,8 +7,8 @@ use tokio::sync::mpsc::UnboundedReceiver;
 use tokio::sync::Notify;
 use tokio::time::{sleep, Duration};
 mod rabbit;
-use std::process;
 use std::ffi::OsStr;
+use std::process;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                             "-r",
                             "mkv",
                             "disc:0",
-                            "/ripoutput/.",
+                            format!("/{}/.", json_message["UUID"]).as_str(),
                         ])
                         .stdout(Stdio::piped())
                         .output()
@@ -43,11 +43,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 } else if json_message["Type"] == "abcde" {
                     // begin abcde rip
                     let output = Command::new("abcde")
-                        .args([
-                            "-d",
-                            "/dev/cdrom",
-                            "/ripoutput/.",
-                        ])
+                        .args(["-d", "/dev/cdrom", format!("/{}/.", json_message["UUID"]).as_str()])
                         .stdout(Stdio::piped())
                         .output()
                         .unwrap();
@@ -75,6 +71,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 } else if json_message["Type"] == "eject" {
                     // eject media
                     let _results = drive_commands::drive_eject("/dev/cdrom").await;
+                } else if json_message["Type"] == "close" {
+                    // close tray
+                    let _results = drive_commands::drive_close("/dev/cdrom").await;
                 }
 
                 let _result =

@@ -9,6 +9,8 @@ pub const DRIVETYPE_HDDVD: &str = "HDDVD";
 pub const INPUT_SPINDLE_LOCATIONS: [i32; 4] = [0, 200, 400, 600];
 pub const OUTPUT_SPINDLE_LOCATIONS: [i32; 4] = [1000, 1200, 1400, 1600];
 pub const CAMERA_LOCATION: (i32, i32) = (500, 1500);
+pub const SPINDLE_HEIGHT: i32 = 5000;
+pub const CAMERA_PLATE_STEPS: i32 = 500;
 
 /*
 u8 has the max value of 255

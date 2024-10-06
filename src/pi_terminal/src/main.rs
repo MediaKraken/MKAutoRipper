@@ -583,7 +583,7 @@ async fn main() {
             move |_| {
                 // retract camera tray
                 let steps_taken = stepper::gpio_stepper_move(
-                    999999999,
+                    i32::MAX,
                     GPIO_STEPPER_TRAY_PULSE,
                     GPIO_STEPPER_TRAY_DIRECTION,
                     GPIO_STEPPER_TRAY_END_STOP_BACK,
@@ -594,7 +594,7 @@ async fn main() {
                     .set_label(&format!("Tray: {}", &position_camera_tray.borrow()));
                 // move loader to top
                 let steps_taken = stepper::gpio_stepper_move(
-                    999999999,
+                    i32::MAX,
                     GPIO_STEPPER_VERTICAL_PULSE,
                     GPIO_STEPPER_VERTICAL_DIRECTION,
                     GPIO_STEPPER_VERTICAL_END_STOP_TOP,
@@ -605,7 +605,7 @@ async fn main() {
                     .set_label(&format!("Vert: {}", &position_vertical.borrow()));
                 // move gantry to far left
                 let steps_taken = stepper::gpio_stepper_move(
-                    999999999,
+                    i32::MAX,
                     GPIO_STEPPER_HORIZONTAL_PULSE,
                     GPIO_STEPPER_HORIZONTAL_DIRECTION,
                     GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
@@ -659,14 +659,14 @@ async fn main() {
         if let payload = msg.unwrap().content {
             let json_message: Value =
                 serde_json::from_str(&String::from_utf8_lossy(&payload.unwrap())).unwrap();
-            if json_message["Type"] == "Done" {
+            if json_message["Type"] == "done" {
                 // TODO position horizontal
                 // TODO position vertical
                 // send eject rabbitmq message
                 rabbitmq::rabbitmq_publish(
                     rabbit_channel.clone(),
-                    json_message["Instance"].as_str().unwrap(),
-                    "Eject".to_string(),
+                    json_message["instance"].as_str().unwrap(),
+                    "{{'Type': 'eject'}}".to_string(),
                 )
                 .await
                 .unwrap();
@@ -678,8 +678,8 @@ async fn main() {
                 // send rabbitmq message to close tray
                 rabbitmq::rabbitmq_publish(
                     rabbit_channel.clone(),
-                    json_message["Instance"].as_str().unwrap(),
-                    "Close".to_string(),
+                    json_message["instance"].as_str().unwrap(),
+                    "{{'Type': 'close'}}".to_string(),
                 )
                 .await
                 .unwrap();
@@ -697,11 +697,13 @@ async fn main() {
                 // check to see if the drive is in use
                 if drive_layout[individual_drive_ndx].4 == false {
                     // check to see if the drive has the proper media capability
-                    if drive_layout[individual_drive_ndx].1.contains(&choice_spindle_1_media_type.choice().as_str())
+                    if drive_layout[individual_drive_ndx]
+                        .1
+                        .contains(&choice_spindle_1_media_type.choice().as_str())
                     {
                         // raise the vertical to above the spindle
                         let steps_taken = stepper::gpio_stepper_move(
-                            5000,    // TODO put in real number
+                            hardware_layout::SPINDLE_HEIGHT,
                             GPIO_STEPPER_VERTICAL_PULSE,
                             GPIO_STEPPER_VERTICAL_DIRECTION,
                             GPIO_STEPPER_VERTICAL_END_STOP_TOP,
@@ -728,7 +730,7 @@ async fn main() {
                         *position_horizontal.borrow_mut() += steps_taken.unwrap();
                         // lower vertical to stop switch on assembly
                         let steps_taken = stepper::gpio_stepper_move(
-                            5000,  // TODO put in real number
+                            5000, // TODO put in real number
                             GPIO_STEPPER_VERTICAL_PULSE,
                             GPIO_STEPPER_VERTICAL_DIRECTION,
                             GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY,
@@ -738,7 +740,8 @@ async fn main() {
                         // TODO if spindle stop switch triggers, turn off media switch and break
                         if *position_vertical.borrow() >= 0 {
                             // pick up media from spindle
-                            let _result: Result<(), Box<dyn Error>> = gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
+                            let _result: Result<(), Box<dyn Error>> =
+                                gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
                             // raise vertical to the camera level
                             let steps_taken = stepper::gpio_stepper_move(
                                 hardware_layout::CAMERA_LOCATION.1,
@@ -747,7 +750,7 @@ async fn main() {
                                 GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                                 true,
                             );
-                            *position_vertical.borrow_mut() += steps_taken.unwrap();     
+                            *position_vertical.borrow_mut() += steps_taken.unwrap();
                             // move horizontal to camera
                             let steps_taken = stepper::gpio_stepper_move(
                                 hardware_layout::CAMERA_LOCATION.0,
@@ -759,7 +762,7 @@ async fn main() {
                             *position_horizontal.borrow_mut() += steps_taken.unwrap();
                             // move camera plate out
                             let steps_taken = stepper::gpio_stepper_move(
-                                500,  // TODO replace with real number
+                                hardware_layout::CAMERA_PLATE_STEPS,
                                 GPIO_STEPPER_TRAY_PULSE,
                                 GPIO_STEPPER_TRAY_DIRECTION,
                                 GPIO_STEPPER_TRAY_END_STOP_FRONT,
@@ -767,14 +770,23 @@ async fn main() {
                             );
                             *position_camera_tray.borrow_mut() += steps_taken.unwrap();
                             // turn on led
-                            let _result: Result<(), Box<dyn Error>> = gpio::gpio_set_pin(true, GPIO_RELAY_LIGHT);
+                            let _result: Result<(), Box<dyn Error>> =
+                                gpio::gpio_set_pin(true, GPIO_RELAY_LIGHT);
+                            // generate path/name to use
+                            let path_photo_name = Uuid::now_v7().to_string();
+                            let _result =
+                                fs::create_dir_all(format!("/nfsmount/{}", path_photo_name));
                             // take photo
-                            let _result = camera::camera_take_image(Uuid::now_v7().to_string().as_str());
+                            let _result = camera::camera_take_image(
+                                format!("/nfsmount/{}/{}.png", path_photo_name, path_photo_name)
+                                    .as_str(),
+                            );
                             // turn off led
-                            let _result: Result<(), Box<dyn Error>> = gpio::gpio_set_pin(false, GPIO_RELAY_LIGHT);
+                            let _result: Result<(), Box<dyn Error>> =
+                                gpio::gpio_set_pin(false, GPIO_RELAY_LIGHT);
                             // move camera plate in
                             let steps_taken = stepper::gpio_stepper_move(
-                                500,  // TODO replace with real number
+                                hardware_layout::CAMERA_PLATE_STEPS,
                                 GPIO_STEPPER_TRAY_PULSE,
                                 GPIO_STEPPER_TRAY_DIRECTION,
                                 GPIO_STEPPER_TRAY_END_STOP_FRONT,
@@ -782,10 +794,11 @@ async fn main() {
                             );
                             *position_camera_tray.borrow_mut() -= steps_taken.unwrap();
                             // move horizontal to drive row
-                            let current_position: i32 = (*(position_horizontal.borrow()));
+                            let current_position: i32 = *(position_horizontal.borrow());
                             if current_position < drive_layout[individual_drive_ndx].2 {
                                 // move arm right
-                                let steps_to_take = drive_layout[individual_drive_ndx].2 - current_position;
+                                let steps_to_take =
+                                    drive_layout[individual_drive_ndx].2 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
                                     GPIO_STEPPER_HORIZONTAL_PULSE,
@@ -794,10 +807,10 @@ async fn main() {
                                     true,
                                 );
                                 *position_horizontal.borrow_mut() -= steps_taken.unwrap();
-                            }
-                            else {
+                            } else {
                                 // move arm left
-                                let steps_to_take = drive_layout[individual_drive_ndx].2 - current_position;
+                                let steps_to_take =
+                                    drive_layout[individual_drive_ndx].2 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
                                     GPIO_STEPPER_HORIZONTAL_PULSE,
@@ -808,10 +821,11 @@ async fn main() {
                                 *position_horizontal.borrow_mut() += steps_taken.unwrap();
                             }
                             // move vertical to above the drive tray
-                            let current_position: i32 = (*(position_vertical.borrow()));
+                            let current_position: i32 = *(position_vertical.borrow());
                             if current_position < drive_layout[individual_drive_ndx].2 {
                                 // move arm up
-                                let steps_to_take = drive_layout[individual_drive_ndx].3 - current_position;
+                                let steps_to_take =
+                                    drive_layout[individual_drive_ndx].3 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
                                     GPIO_STEPPER_VERTICAL_PULSE,
@@ -820,10 +834,10 @@ async fn main() {
                                     true,
                                 );
                                 *position_vertical.borrow_mut() -= steps_taken.unwrap();
-                            }
-                            else {
+                            } else {
                                 // move arm down
-                                let steps_to_take = drive_layout[individual_drive_ndx].3 - current_position;
+                                let steps_to_take =
+                                    drive_layout[individual_drive_ndx].3 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
                                     GPIO_STEPPER_VERTICAL_PULSE,
@@ -837,7 +851,7 @@ async fn main() {
                             rabbitmq::rabbitmq_publish(
                                 rabbit_channel.clone(),
                                 drive_layout[individual_drive_ndx].0.to_string().as_str(),
-                                "OPEN".to_string(),
+                                "{{'Type': 'eject'}}".to_string(),
                             )
                             .await
                             .unwrap();
@@ -845,20 +859,30 @@ async fn main() {
                             sleep(Duration::from_secs(5)).await;
                             // lower vertitcal to drop position
                             let steps_taken = stepper::gpio_stepper_move(
-                                50,  // TODO put in real number
+                                50, // TODO put in real number
                                 GPIO_STEPPER_VERTICAL_PULSE,
                                 GPIO_STEPPER_VERTICAL_DIRECTION,
                                 GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY,
                                 false,
                             );
-                            *position_vertical.borrow_mut() -= steps_taken.unwrap();   
+                            *position_vertical.borrow_mut() -= steps_taken.unwrap();
                             // drop media into tray
                             let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
                             // rabbitmq close/start rip
+                            let mut ripper_software = "makemkv";
+                            if choice_spindle_1_media_type.choice().as_str()
+                                == hardware_layout::DRIVETYPE_CD
+                            {
+                                ripper_software = "abcde";
+                            }
                             rabbitmq::rabbitmq_publish(
                                 rabbit_channel.clone(),
                                 drive_layout[individual_drive_ndx].0.to_string().as_str(),
-                                "START".to_string(),
+                                format!(
+                                    "{{'Type': '{}', 'UUID': '{:?}'}}",
+                                    ripper_software, path_photo_name
+                                )
+                                .to_string(),
                             )
                             .await
                             .unwrap();
@@ -880,6 +904,7 @@ async fn main() {
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 true,
             );
+            *position_horizontal.borrow_mut() += steps_taken.unwrap();
         }
         if spindle_three_media_left {
             // TODO do I zero first or do math?
@@ -890,6 +915,7 @@ async fn main() {
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 true,
             );
+            *position_horizontal.borrow_mut() += steps_taken.unwrap();
         }
         if spindle_four_media_left {
             // TODO do I zero first or do math?
@@ -900,6 +926,7 @@ async fn main() {
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 true,
             );
+            *position_horizontal.borrow_mut() += steps_taken.unwrap();
         }
         sleep(Duration::from_secs(1)).await;
     }

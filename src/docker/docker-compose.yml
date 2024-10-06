@@ -40,9 +40,9 @@ services:
     stop_grace_period: 30s
     stop_signal: SIGTERM
     ports:
-      - "5672:5672"  # for testing only!!!
+      - "5672:5672"
       # https management port
-      # - "15671:15671"
+      - "15671:15671"
       # http management port
       - "15672:15672"
     networks:
