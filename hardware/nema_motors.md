@@ -1,3 +1,4 @@
+# Main Drive Arm:
 4-wire
 Automation Technology
 KL23H2100-50-4B
@@ -13,6 +14,7 @@ Green to A-
 Red to B+
 Blue to B-
 
+# Pickup Arm
 Motech Motor
 MT-2303HS280AW
 Nema 23
@@ -22,17 +24,20 @@ Step Angle: 1.8
 Peak Current is 2.8A/phase
 4 Wire Bi-Polar
 12-48VDC (Recommended)
+Red to A+
+Green to A-
+Yellow to B+
+Blue to B-
 
-14HS13-0804S
-Nema 14Motor Type: Bipolar Stepper
-Step Angle: 1.8deg
-Holding Torque: 18Ncm(25.5oz.in)
-Rated Current/phase: 0.8A
-Phase Resistance: 6.8ohms
-Inductance: 10mH±20%(1KHz)
+# Picture Tray
+57H56H3004A2
+https://www.alibaba.com/product-detail/CNC-Sliding-Table-Z-axis-stage_1601216021373.html
+Red to A+
+Green to A-
+Yellow to B+
+Blue to B-
 
-17HD40005H-22B
 
-6-wire
-Minbea-Matsushita
-23KM-K036-P13V
+# green connector
+A+ A- B+ B-  Female Motor Side
+A+ A- B+ B-  Male Controller Side
