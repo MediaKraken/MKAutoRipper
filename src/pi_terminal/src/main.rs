@@ -192,7 +192,7 @@ async fn main() {
         (24, vec![hardware_layout::DRIVETYPE_HDDVD], 700, 150, false),
     ];
     // connect to database
-    // let db_pool = database::database_open().unwrap();
+    //let db_pool = database::database_open().unwrap();
     let (_rabbit_connection, rabbit_channel) =
         rabbitmq::rabbitmq_connect("mkterminal").await.unwrap();
     let mut rabbit_consumer = rabbitmq::rabbitmq_consumer("mkterminal", &rabbit_channel)
@@ -632,7 +632,7 @@ async fn main() {
 
     // launch thread to do the actual processing of the discs
     //    let _handle_tmdb = tokio::spawn(async move {
-    let db_pool = database::database_open().unwrap();
+    //let db_pool = database::database_open().unwrap();
     let mut initial_start = true;
     let mut spindle_one_media_left = false;
     let mut spindle_two_media_left = false;
