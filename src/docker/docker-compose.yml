@@ -3,33 +3,33 @@ version: '3.8'
 # Volumes are HOST directory and then CONTAINER directory
 
 services:
-  ripper1:
-    image: mediakraken/mkripper:${BRANCH}
-    environment:
-      - WAIT_HOSTS=rabbitmq:5672
-      - WAIT_TIMEOUT=180
-    command: sh -c "/wait && /ripper"
-    devices:
-      - '/dev/sr0:/dev/sr0'
-    privileged: true 
-    stop_grace_period: 30s
-    stop_signal: SIGUSR1
-    networks:
-      - mkautoripper_network
+  # ripper1:
+  #   image: mediakraken/mkripper:${BRANCH}
+  #   environment:
+  #     - WAIT_HOSTS=rabbitmq:5672
+  #     - WAIT_TIMEOUT=180
+  #   command: sh -c "/wait && /ripper"
+  #   devices:
+  #     - '/dev/sr0:/dev/sr0'
+  #   privileged: true 
+  #   stop_grace_period: 30s
+  #   stop_signal: SIGUSR1
+  #   networks:
+  #     - mkautoripper_network
 
-  ripper2:
-    image: mediakraken/mkripper:${BRANCH}
-    environment:
-      - WAIT_HOSTS=rabbitmq:5672
-      - WAIT_TIMEOUT=180
-    command: sh -c "/wait && /ripper"
-    devices:
-      - '/dev/sr1:/dev/sr0'
-    privileged: true 
-    stop_grace_period: 30s
-    stop_signal: SIGUSR1
-    networks:
-      - mkautoripper_network
+  # ripper2:
+  #   image: mediakraken/mkripper:${BRANCH}
+  #   environment:
+  #     - WAIT_HOSTS=rabbitmq:5672
+  #     - WAIT_TIMEOUT=180
+  #   command: sh -c "/wait && /ripper"
+  #   devices:
+  #     - '/dev/sr1:/dev/sr0'
+  #   privileged: true 
+  #   stop_grace_period: 30s
+  #   stop_signal: SIGUSR1
+  #   networks:
+  #     - mkautoripper_network
 
   rabbitmq:
     image: mediakraken/mkrabbitmq:${BRANCH}
