@@ -1,10 +1,9 @@
 ---
-version: '3.8'
 # Volumes are HOST directory and then CONTAINER directory
 
 services:
   # ripper1:
-  #   image: mediakraken/mkripper:${BRANCH}
+  #   image: mediakraken/mkripper:dev
   #   environment:
   #     - WAIT_HOSTS=rabbitmq:5672
   #     - WAIT_TIMEOUT=180
@@ -18,7 +17,7 @@ services:
   #     - mkautoripper_network
 
   # ripper2:
-  #   image: mediakraken/mkripper:${BRANCH}
+  #   image: mediakraken/mkripper:dev
   #   environment:
   #     - WAIT_HOSTS=rabbitmq:5672
   #     - WAIT_TIMEOUT=180
@@ -32,7 +31,7 @@ services:
   #     - mkautoripper_network
 
   rabbitmq:
-    image: mediakraken/mkrabbitmq:${BRANCH}
+    image: mediakraken/mkrabbitmq:dev
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
