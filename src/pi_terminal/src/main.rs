@@ -321,13 +321,13 @@ async fn main() {
     info_table.set_cell_value(
         1,
         1,
-        &byte_size::mk_lib_common_bytesize(sys_info::mem_info().unwrap().total).unwrap(),
+        &byte_size::mk_lib_common_bytesize(sys_info::mem_info().unwrap().total * 1000).unwrap(),
     );
     info_table.set_cell_value(2, 0, "Disk");
     info_table.set_cell_value(
         2,
         1,
-        &byte_size::mk_lib_common_bytesize(sys_info::disk_info().unwrap().total).unwrap(),
+        &byte_size::mk_lib_common_bytesize(sys_info::disk_info().unwrap().total * 1000).unwrap(),
     );
     info_table.set_cell_value(3, 0, "Camera");
     info_table.set_cell_value(3, 1, "N/A");
@@ -377,8 +377,8 @@ async fn main() {
     let mut button_forward_full_rotation = Button::new(750, 250, 50, 50, "F F");
 
     // activate equipment
-    let mut button_vacuum = Button::new(600, 310, 80, 50, "Vacuum");
-    let mut button_snapshot = Button::new(700, 310, 80, 50, "Snapshot");
+    let mut button_vacuum = Button::new(600, 320, 80, 50, "Vacuum");
+    let mut button_snapshot = Button::new(700, 320, 80, 50, "Snapshot");
 
     // start/stop ripping
     let mut button_start = Button::new(500, 390, 150, 60, "Start Ripping!");
