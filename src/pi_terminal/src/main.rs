@@ -630,6 +630,8 @@ async fn main() {
         // TODO stop the system immediately
     });
 
+    app.run().unwrap();
+
     // launch thread to do the actual processing of the discs
     //    let _handle_tmdb = tokio::spawn(async move {
     //let db_pool = database::database_open().unwrap();
@@ -934,7 +936,6 @@ async fn main() {
         }
         sleep(Duration::from_secs(1)).await;
     }
-    //    });
 
-    app.run().unwrap();
+//    app.run().unwrap();
 }
