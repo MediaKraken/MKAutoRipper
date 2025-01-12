@@ -205,7 +205,7 @@ async fn main() {
     let position_vertical = Rc::new(RefCell::new(0));
     let position_camera_tray = Rc::new(RefCell::new(0));
 
-    let mut win = Window::new(0, 0, 800, 480, "pi_terminal for autoripper");
+    let mut win = Window::new(0, 0, 800, 460, "pi_terminal for autoripper");
 
     let mut container_spindle = Pack::new(10, 25, 300, 35, "Spindle Type");
 
@@ -360,18 +360,21 @@ async fn main() {
 
     // move the arms around
     let mut button_zero = Button::new(400, 15, 150, 50, "Zero Everything");
-    let mut button_left = Button::new(625, 100, 25, 50, "L");
-    let mut button_left_full_rotation = Button::new(650, 100, 25, 50, "L F");
-    let mut button_up = Button::new(675, 75, 25, 50, "U");
-    let mut button_up_full_rotation = Button::new(700, 75, 25, 50, "U F");
-    let mut button_down = Button::new(675, 125, 25, 50, "D");
-    let mut button_down_full_rotation = Button::new(700, 125, 25, 50, "D F");
-    let mut button_right = Button::new(725, 100, 25, 50, "R");
-    let mut button_right_full_rotation = Button::new(750, 100, 25, 50, "R F");
-    let mut button_back = Button::new(725, 150, 25, 50, "B");
-    let mut button_back_full_rotation = Button::new(750, 150, 25, 50, "B F");
-    let mut button_forward = Button::new(725, 150, 25, 50, "F");
-    let mut button_forward_full_rotation = Button::new(750, 150, 25, 50, "F F");
+    // main track
+    let mut button_left = Button::new(625, 100, 50, 50, "L");
+    let mut button_left_full_rotation = Button::new(675, 100, 25, 50, "L F");
+    let mut button_right = Button::new(725, 100, 50, 50, "R");
+    let mut button_right_full_rotation = Button::new(750, 100, 50, 50, "R F");
+    // pickup arm
+    let mut button_up = Button::new(625, 175, 50, 50, "U");
+    let mut button_up_full_rotation = Button::new(700, 75, 50, 50, "U F");
+    let mut button_down = Button::new(675, 175, 50, 50, "D");
+    let mut button_down_full_rotation = Button::new(700, 125, 50, 50, "D F");
+    // camera tray
+    let mut button_back = Button::new(725, 250, 50, 50, "B");
+    let mut button_back_full_rotation = Button::new(750, 250, 50, 50, "B F");
+    let mut button_forward = Button::new(725, 250, 50, 50, "F");
+    let mut button_forward_full_rotation = Button::new(750, 250, 50, 50, "F F");
 
     // activate equipment
     let mut button_vacuum = Button::new(620, 250, 80, 50, "Vacuum");
