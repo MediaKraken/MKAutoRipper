@@ -44,7 +44,6 @@ const GPIO_STEPPER_TRAY_PULSE: u8 = 3;
 
 const GPIO_RELAY_VACUUM: u8 = 255;
 const GPIO_RELAY_LIGHT: u8 = 255;
-//const GPIO_RELAY_WATER: u8 = 255;   // water will end up another app probably on another pi
 
 #[tokio::main]
 async fn main() {
@@ -200,14 +199,12 @@ async fn main() {
         .unwrap();
     let mut hard_stop: bool = false;
     let mut gpio_relay_vacuum_on: bool = false;
-    let mut gpio_relay_water_on: bool = false;
     let app = app::App::default();
 
     let position_horizontal = Rc::new(RefCell::new(0));
     let position_vertical = Rc::new(RefCell::new(0));
     let position_camera_tray = Rc::new(RefCell::new(0));
 
-    //let mut win = Window::default().with_size(800, 480);
     let mut win = Window::new(0, 0, 800, 480, "pi_terminal for autoripper");
 
     let mut container_spindle = Pack::new(10, 25, 300, 35, "Spindle Type");
@@ -377,17 +374,12 @@ async fn main() {
     let mut button_forward_full_rotation = Button::new(750, 150, 25, 50, "F F");
 
     // activate equipment
-    let mut button_vacuum = Button::new(620, 180, 80, 50, "Vacuum");
-    let mut button_snapshot = Button::new(700, 180, 80, 50, "Snapshot");
-
-    // following are for buffer/cleaner
-    let mut button_water = Button::new(585, 240, 70, 50, "Water");
-    let mut button_spinner = Button::new(655, 240, 70, 50, "Spinner");
-    let mut button_buffer = Button::new(725, 240, 70, 50, "Buffer");
+    let mut button_vacuum = Button::new(620, 250, 80, 50, "Vacuum");
+    let mut button_snapshot = Button::new(700, 250, 80, 50, "Snapshot");
 
     // start/stop ripping
-    let mut button_start = Button::new(500, 420, 150, 60, "Start Ripping!");
-    let mut button_stop = Button::new(650, 420, 150, 60, "Stop!");
+    let mut button_start = Button::new(500, 390, 150, 60, "Start Ripping!");
+    let mut button_stop = Button::new(650, 390, 150, 60, "Stop!");
 
     win.end();
     win.show();
@@ -551,25 +543,6 @@ async fn main() {
         // let _result =
         //     database::database_insert_logs(&db_pool, database::LogType::LOG_SNAPSHOT, "Snapshot");
         // let _result = database::database_update_totals(&db_pool, "images_taken", 1);
-    });
-
-    button_water.set_callback(move |_| {
-        // toggle water flow
-        gpio_relay_water_on = !gpio_relay_water_on;
-        // let _result = gpio::gpio_set_pin(gpio_relay_water_on, GPIO_RELAY_WATER);
-        // let _result = database::database_insert_logs(
-        //     &db_pool,
-        //     database::LogType::LOG_RELAY_WATER,
-        //     &format!("{}", gpio_relay_vacuum_on),
-        // );
-    });
-
-    button_spinner.set_callback(move |_| {
-        // TODO toggle media spinner motor
-    });
-
-    button_buffer.set_callback(move |_| {
-        // TODO toggle cleaner/buffer motor
     });
 
     button_zero.set_callback(
