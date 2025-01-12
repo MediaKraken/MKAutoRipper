@@ -361,24 +361,24 @@ async fn main() {
     // move the arms around
     let mut button_zero = Button::new(400, 15, 150, 50, "Zero Everything");
     // main track
-    let mut button_left = Button::new(600, 100, 50, 50, "L");
-    let mut button_left_full_rotation = Button::new(655, 100, 50, 50, "L F");
-    let mut button_right = Button::new(705, 100, 50, 50, "R");
+    let mut button_left = Button::new(590, 100, 50, 50, "L");
+    let mut button_left_full_rotation = Button::new(640, 100, 50, 50, "L F");
+    let mut button_right = Button::new(700, 100, 50, 50, "R");
     let mut button_right_full_rotation = Button::new(750, 100, 50, 50, "R F");
     // pickup arm
-    let mut button_up = Button::new(600, 175, 50, 50, "U");
-    let mut button_up_full_rotation = Button::new(650, 175, 50, 50, "U F");
+    let mut button_up = Button::new(590, 175, 50, 50, "U");
+    let mut button_up_full_rotation = Button::new(640, 175, 50, 50, "U F");
     let mut button_down = Button::new(700, 175, 50, 50, "D");
     let mut button_down_full_rotation = Button::new(750, 175, 50, 50, "D F");
     // camera tray
-    let mut button_back = Button::new(600, 250, 50, 50, "B");
-    let mut button_back_full_rotation = Button::new(650, 240, 50, 50, "B F");
+    let mut button_back = Button::new(590, 250, 50, 50, "B");
+    let mut button_back_full_rotation = Button::new(640, 250, 50, 50, "B F");
     let mut button_forward = Button::new(700, 250, 50, 50, "F");
-    let mut button_forward_full_rotation = Button::new(750, 240, 50, 50, "F F");
+    let mut button_forward_full_rotation = Button::new(750, 250, 50, 50, "F F");
 
     // activate equipment
-    let mut button_vacuum = Button::new(600, 300, 80, 50, "Vacuum");
-    let mut button_snapshot = Button::new(700, 300, 80, 50, "Snapshot");
+    let mut button_vacuum = Button::new(600, 310, 80, 50, "Vacuum");
+    let mut button_snapshot = Button::new(700, 310, 80, 50, "Snapshot");
 
     // start/stop ripping
     let mut button_start = Button::new(500, 390, 150, 60, "Start Ripping!");
