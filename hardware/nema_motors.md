@@ -1,4 +1,5 @@
 # Main Drive Arm:
+DM860A Driver
 4-wire
 Automation Technology
 KL23H2100-50-4B
@@ -15,6 +16,7 @@ Red to B+
 Blue to B-
 
 # Pickup Arm
+DM556S Driver
 Motech Motor
 MT-2303HS280AW
 Nema 23
@@ -30,6 +32,7 @@ Yellow to B+
 Blue to B-
 
 # Picture Tray
+DM556S Driver
 57H56H3004A2
 https://www.alibaba.com/product-detail/CNC-Sliding-Table-Z-axis-stage_1601216021373.html
 Red to A+

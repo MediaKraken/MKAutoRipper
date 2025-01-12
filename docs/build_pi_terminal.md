@@ -76,6 +76,10 @@ cross build --target=armv7-unknown-linux-gnueabihf
 cross build --target aarch64-unknown-linux-gnu
     # this doesn't work as x11 doesn't have an aarch64 version
 
+
+
+
+
 # actually since i'm not talking over usb/serial, do I need to do this?
 
 # setup uart ports

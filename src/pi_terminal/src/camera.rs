@@ -1,17 +1,12 @@
 use std::process::{Command, Stdio};
 
-// raspi-config - do NOT do
-//  3
-//  enable camera
-//  reboot
-// see if camera detectede
-// vcgencmd get_camera
-
 // raspi-config
 //  updated raspi-config
 // mine was two years old....
 //  sudo rpi-update
+//  sudo reboot
 //  sudo rpi-eeprom-update
+//  sudo reboot
 
 // turn on i2c
 // libcamera-hello --list-cameras
@@ -20,6 +15,8 @@ use std::process::{Command, Stdio};
 // works as this will allow ssh
 // libcamera-hello --qt-preview
 // libcamera-still -e png -o still-test.png -n
+// show image stats
+// file still-test.png
 
 pub fn camera_take_image(
     media_file: &str,
