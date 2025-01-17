@@ -530,6 +530,78 @@ async fn main() {
         }
     });
 
+    button_back.set_callback({
+        let position_camera_tray = position_camera_tray.clone();
+        let mut frame_position_camera_tray = frame_position_camera_tray.clone();
+        move |_| {
+            let steps_taken = stepper::gpio_stepper_move(
+                1,
+                GPIO_STEPPER_TRAY_PULSE,
+                GPIO_STEPPER_TRAY_DIRECTION,
+                GPIO_STEPPER_TRAY_END_STOP_BACK,
+                true,
+            );
+            *position_camera_tray.borrow_mut() += steps_taken.unwrap();
+            frame_position_camera_tray.set_label(&format!(
+                "Tray: {}",
+                &position_camera_tray.borrow().to_string()
+            ));
+        }
+    });
+
+    button_back_full_rotation.set_callback({
+        let position_camera_tray = position_camera_tray.clone();
+        let mut frame_position_camera_tray = frame_position_camera_tray.clone();
+        move |_| {
+            let steps_taken = stepper::gpio_stepper_move(
+                200,
+                GPIO_STEPPER_TRAY_PULSE,
+                GPIO_STEPPER_TRAY_DIRECTION,
+                GPIO_STEPPER_TRAY_END_STOP_BACK,
+                true,
+            );
+            *position_camera_tray.borrow_mut() += steps_taken.unwrap();
+            frame_position_camera_tray.set_label(&format!(
+                "Tray: {}",
+                &position_camera_tray.borrow().to_string()
+            ));
+        }
+    });
+
+    button_forward.set_callback({
+        let position_camera_tray = position_camera_tray.clone();
+        let mut frame_position_camera_tray = frame_position_camera_tray.clone();
+        move |_| {
+            let steps_taken = stepper::gpio_stepper_move(
+                1,
+                GPIO_STEPPER_TRAY_PULSE,
+                GPIO_STEPPER_TRAY_DIRECTION,
+                GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                false,
+            );
+            *position_camera_tray.borrow_mut() -= steps_taken.unwrap();
+            frame_position_camera_tray
+                .set_label(&format!("Tray: {}", &position_camera_tray.borrow()));
+        }
+    });
+
+    button_forward_full_rotation.set_callback({
+        let position_camera_tray: Rc<RefCell<i32>> = position_camera_tray.clone();
+        let mut frame_position_camera_tray = frame_position_camera_tray.clone();
+        move |_| {
+            let steps_taken = stepper::gpio_stepper_move(
+                200,
+                GPIO_STEPPER_TRAY_PULSE,
+                GPIO_STEPPER_TRAY_DIRECTION,
+                GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                false,
+            );
+            *position_camera_tray.borrow_mut() -= steps_taken.unwrap();
+            frame_position_camera_tray
+                .set_label(&format!("Tray: {}", &position_camera_tray.borrow()));
+        }
+    });
+
     button_vacuum.set_callback(move |_| {
         // toggle vacuum
         gpio_relay_vacuum_on = !gpio_relay_vacuum_on;
