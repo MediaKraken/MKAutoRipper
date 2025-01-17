@@ -1,5 +1,7 @@
+I set the pulses at 6400 for all 3 drivers
+
 # Main Drive Arm:
-DM860A Driver
+DM860A Driver - https://www.longs-motor.com/stepper-motor-driver-dm860a.html
 4-wire
 Automation Technology
 KL23H2100-50-4B
@@ -16,7 +18,7 @@ Red to B+
 Blue to B-
 
 # Pickup Arm
-DM556S Driver
+DM556S Driver - https://www.ebay.com/itm/115937730254
 Motech Motor
 MT-2303HS280AW
 Nema 23

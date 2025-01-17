@@ -10,7 +10,7 @@ CW = 1
 CCW = 0
 
 # Setup pin layout on PI
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 
 # Establish Pins in software
 GPIO.setup(DIR, GPIO.OUT)
