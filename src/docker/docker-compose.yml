@@ -40,3 +40,14 @@ services:
       - "15671:15671"
       # http management port
       - "15672:15672"
+
+  scanservjs:
+    image: sbs20/scanservjs:latest
+    privileged: true
+    stop_grace_period: 30s
+    stop_signal: SIGTERM
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/dbus:/var/run/dbus
+

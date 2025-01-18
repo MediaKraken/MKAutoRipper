@@ -37,6 +37,7 @@ Blue to B-
 DM556S Driver
 57H56H3004A2
 https://www.alibaba.com/product-detail/CNC-Sliding-Table-Z-axis-stage_1601216021373.html
+3A
 Red to A+
 Green to A-
 Yellow to B+
