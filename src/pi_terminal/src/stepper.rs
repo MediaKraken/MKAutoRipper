@@ -46,6 +46,7 @@ pub fn gpio_stepper_move(
         // Check for hardstops
         let pin_value = pin.read() as u8;
         if pin_value > 0 {
+            println!("Hard Stop");
             break;
         }
     }
