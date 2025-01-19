@@ -7,7 +7,7 @@ use rppal::spi::{Bus, Mode, SlaveSelect, Spi};
 use rppal::uart::{Parity, Uart};
 use serde_json::{json, Value};
 use std::error::Error;
-use std::fs;
+use std::{fs, i32};
 use std::{cell::RefCell, rc::Rc};
 use tokio::time::{sleep, Duration};
 use uuid::Uuid;
@@ -448,7 +448,7 @@ async fn main() {
         let mut frame_position_horizontal = frame_position_horizontal.clone();
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                200,
+                i32::MAX,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
@@ -484,7 +484,7 @@ async fn main() {
         let mut frame_position_vertical = frame_position_vertical.clone();
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                200,
+                i32::MAX,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
                 GPIO_STEPPER_VERTICAL_END_STOP_TOP,
@@ -519,7 +519,7 @@ async fn main() {
         let mut frame_position_vertical = frame_position_vertical.clone();
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                200,
+                i32::MAX,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
                 GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
@@ -554,7 +554,7 @@ async fn main() {
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                200,
+                i32::MAX,
                 GPIO_STEPPER_TRAY_PULSE,
                 GPIO_STEPPER_TRAY_DIRECTION,
                 GPIO_STEPPER_TRAY_END_STOP_BACK,
@@ -590,7 +590,7 @@ async fn main() {
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                200,
+                i32::MAX,
                 GPIO_STEPPER_TRAY_PULSE,
                 GPIO_STEPPER_TRAY_DIRECTION,
                 GPIO_STEPPER_TRAY_END_STOP_FRONT,
@@ -614,7 +614,9 @@ async fn main() {
     });
 
     button_snapshot.set_callback(move |_| {
+        let _result = gpio::gpio_set_pin(true, GPIO_RELAY_LIGHT);
         let _result = camera::camera_take_image("demo.png");
+        let _result = gpio::gpio_set_pin(false, GPIO_RELAY_LIGHT);
         // let _result =
         //     database::database_insert_logs(&db_pool, database::LogType::LOG_SNAPSHOT, "Snapshot");
         // let _result = database::database_update_totals(&db_pool, "images_taken", 1);
