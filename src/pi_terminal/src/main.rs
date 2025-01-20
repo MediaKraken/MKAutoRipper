@@ -32,7 +32,7 @@ const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 19;               // 35
 // CD Picker/loader
 const GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY: u8 = 27;     // 13
 const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 22;       // 15
-const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 10;         // 19
+const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 10;          // 19
 const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 11;             // 23
 const GPIO_STEPPER_VERTICAL_PULSE: u8 = 9;                  // 21
 
@@ -43,7 +43,7 @@ const GPIO_STEPPER_TRAY_DIRECTION: u8 = 24;                 // 18
 const GPIO_STEPPER_TRAY_PULSE: u8 = 23;                     // 16
 
 const GPIO_RELAY_VACUUM: u8 = 20;                           // 38
-const GPIO_RELAY_LIGHT: u8 = 21;                            // 40
+const GPIO_RELAY_LIGHT: u8 = 16;                            // 36
 
 #[tokio::main]
 async fn main() {
