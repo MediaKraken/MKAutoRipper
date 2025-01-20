@@ -23,3 +23,7 @@ dd bs=4M if=2017-11-29-raspbian-stretch.img of=/dev/sdb conv=fsync
 ***************************************
 
 must sudo run the pi_terminal app or you don't have access to gpio pins
+
+
+    GPIOs up to 8: default state is 1 (HIGH, or close to 3.3V).
+    GPIOs 9 to 27: default state is 0 (LOW, or close to 0V).

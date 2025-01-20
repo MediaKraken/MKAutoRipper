@@ -25,22 +25,22 @@ mod stepper;
 // BCM pin numbering! Do not use physcial pin numbers.
 // Main movement arm
 const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13;       // 33
-const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 6;       // 31
+const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 21;      // 40
 const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 26;           // 37
 const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 19;               // 35
 
 // CD Picker/loader
 const GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY: u8 = 27;     // 13
 const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 22;       // 15
-const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 10 ;         // 19
+const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 10;         // 19
 const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 11;             // 23
 const GPIO_STEPPER_VERTICAL_PULSE: u8 = 9;                  // 21
 
 // Image tray
 const GPIO_STEPPER_TRAY_END_STOP_BACK: u8 = 17;             // 11
-const GPIO_STEPPER_TRAY_END_STOP_FRONT: u8 = 2;             // 3
-const GPIO_STEPPER_TRAY_DIRECTION: u8 = 4;                  // 7
-const GPIO_STEPPER_TRAY_PULSE: u8 = 3;                      // 5
+const GPIO_STEPPER_TRAY_END_STOP_FRONT: u8 = 18;            // 12
+const GPIO_STEPPER_TRAY_DIRECTION: u8 = 24;                 // 18
+const GPIO_STEPPER_TRAY_PULSE: u8 = 23;                     // 16
 
 const GPIO_RELAY_VACUUM: u8 = 20;                           // 38
 const GPIO_RELAY_LIGHT: u8 = 21;                            // 40
