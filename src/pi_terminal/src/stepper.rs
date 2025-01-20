@@ -45,7 +45,7 @@ pub fn gpio_stepper_move(
         thread::sleep(Duration::from_micros(500));
         // TODO https://roboticsbackend.com/raspberry-pi-gpios-default-state/
         // Check for hardstops
-        if pin.is_high() {
+        if pin.is_low() {
             println!("Hard Stop");
             break;
         }
