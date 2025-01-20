@@ -412,7 +412,7 @@ async fn main() {
         let mut frame_position_horizontal = frame_position_horizontal.clone();
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                200,
+                i32::MAX,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
