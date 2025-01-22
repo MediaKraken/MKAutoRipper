@@ -1,4 +1,4 @@
-use rppal::gpio::Gpio;
+use rppal::gpio::{Gpio, Level};
 use std::error::Error;
 use std::thread;
 use std::time::Duration;
@@ -28,8 +28,8 @@ pub fn gpio_stepper_move(
     // Retrieve a Pin without converting it to an InputPin,
     // OutputPin or IoPin, so we can check the pin's mode
     // and level without affecting its state.
-    //let pin = gpios.get(hard_stop_pin_number)?;
-    let pin = gpios.get(hard_stop_pin_number)?.into_input_pulldown();
+    let pin = gpios.get(hard_stop_pin_number)?;
+//    let pin = gpios.get(hard_stop_pin_number)?.into_input_pulldown();
     // set direction
     if move_clockwise {
         stepper_direction_output.set_high();
@@ -44,7 +44,8 @@ pub fn gpio_stepper_move(
         stepper_pulse_output.set_low();
         thread::sleep(Duration::from_micros(500));
         // Check for hardstops
-        if pin.is_high() {
+        if pin.read() == rppal::gpio::Level::High {
+//        if pin.is_high() {
             println!("Hard Stop");
             break;
         }
