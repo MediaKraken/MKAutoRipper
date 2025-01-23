@@ -29,7 +29,7 @@ pub fn gpio_stepper_move(
     // OutputPin or IoPin, so we can check the pin's mode
     // and level without affecting its state.
     //let pin = gpios.get(hard_stop_pin_number)?;
-    let pin = gpios.get(hard_stop_pin_number)?.into_input_pullup();
+    let pin = gpios.get(hard_stop_pin_number)?.into_input_pulldown();
     // set direction
     if move_clockwise {
         stepper_direction_output.set_high();
@@ -45,7 +45,7 @@ pub fn gpio_stepper_move(
         thread::sleep(Duration::from_micros(500));
         // Check for hardstops
 //        if pin.read() == rppal::gpio::Level::High {
-        if pin.is_low() {
+        if pin.is_high() {
             println!("Hard Stop");
             break;
         }

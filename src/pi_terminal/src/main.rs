@@ -384,6 +384,9 @@ async fn main() {
     let mut button_start = Button::new(500, 390, 150, 60, "Start Ripping!");
     let mut button_stop = Button::new(650, 390, 150, 60, "Stop!");
 
+    // exit
+    let mut button_exit = Button::new(50, 390, 150, 60, "EXIT!");
+
     win.end();
     win.show();
 
@@ -678,6 +681,10 @@ async fn main() {
 
     button_stop.set_callback(move |_| {
         // TODO stop the system immediately
+    });
+
+    button_exit.set_callback(move |_| {
+        std::process::exit(0);
     });
 
     app.run().unwrap();
