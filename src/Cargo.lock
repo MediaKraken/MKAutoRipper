@@ -341,6 +341,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e05e7e6723e3455f4818c7b26e855439f7546cf617ef669d1adedb8669e5cb9"
 
 [[package]]
+name = "gpio_status"
+version = "0.0.1"
+dependencies = [
+ "lazy_static",
+ "rppal",
+ "serde",
+ "serde_json",
+ "syact",
+ "sys-info",
+ "tokio",
+ "tokio-test",
+]
+
+[[package]]
 name = "hermit-abi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
