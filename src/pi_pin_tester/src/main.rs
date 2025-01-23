@@ -52,4 +52,11 @@ pub async fn main() {
     } else {
         println!("Low");
     }
+    let pin_input = gpios.get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT).unwrap().into_input_pullup();
+    if pin_input.is_high() {
+        println!("High Input");
+    }
+    else {
+        println!("Low Input");
+    }
 }
