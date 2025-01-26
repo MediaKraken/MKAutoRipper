@@ -385,7 +385,7 @@ async fn main() {
     let mut button_stop = Button::new(650, 390, 150, 60, "Stop!");
 
     // exit
-    let mut button_exit = Button::new(50, 390, 150, 60, "EXIT!");
+    let mut button_exit = Button::new(325, 390, 150, 60, "EXIT!");
 
     win.end();
     win.show();
