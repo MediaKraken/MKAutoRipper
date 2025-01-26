@@ -13,6 +13,7 @@ pub fn gpio_set_pin(set_high: bool, pin_number: u8) -> Result<(), Box<dyn Error>
         Ok(output) => output.into_output(),
         Err(msg) => panic!("Error: {}", msg),
     };
+    output.set_reset_on_drop(false);
     if set_high {
         output.set_high();
     } else {

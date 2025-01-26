@@ -29,7 +29,7 @@ pub fn gpio_stepper_move(
     // OutputPin or IoPin, so we can check the pin's mode
     // and level without affecting its state.
     //let pin = gpios.get(hard_stop_pin_number)?;
-    let pin = gpios.get(hard_stop_pin_number)?.into_input_pulldown();
+    let pin = gpios.get(hard_stop_pin_number)?.into_input_pullup();
     // set direction
     if move_clockwise {
         stepper_direction_output.set_high();
