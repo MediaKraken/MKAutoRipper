@@ -46,9 +46,9 @@ pub fn gpio_stepper_move(
         // Check for hardstops
 //        if pin.read() == rppal::gpio::Level::High {
         if pin.is_high() {
-            println!("Hard Stop");
-            break;
-        }
+            println!("Hard");
+//            break;
+        } else {println!("Low")}
     }
     Ok(steps_moved)
 }
