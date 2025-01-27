@@ -28,4 +28,5 @@ must sudo run the pi_terminal app or you don't have access to gpio pins
 GPIOs up to 8: default state is 1 (HIGH, or close to 3.3V).
 GPIOs 9 to 27: default state is 0 (LOW, or close to 0V).
 
-The Raspberry Pi has 4 hardware PWM pins: GPIO 12, GPIO 13, GPIO 18, GPIO 19.
+The Raspberry Pi supports 2 hardware based PWM channels. You can access these two channels via 2 separate sets of 4 GPIO header pins, but still limited to only 2 channels (2 unique PWM timing configurations).
+    Hardware PWM available on GPIO12, GPIO13, GPIO18, GPIO19
