@@ -271,9 +271,9 @@ checksum = "361a90feb7004eca4019fb28352a9465666b24f840f5c3cddf0ff13920590b89"
 
 [[package]]
 name = "fltk"
-version = "1.5.1"
+version = "1.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f182aa7eccef8015c19cd8d1f85da528ca32d2eb3effaccd7c8d4ff22e244174"
+checksum = "c56f0f52b2113c3e23adca6c870ee9d16b5222536b8c23a9baf64968bcc7cc5e"
 dependencies = [
  "bitflags 2.4.1",
  "crossbeam-channel",
@@ -285,9 +285,9 @@ dependencies = [
 
 [[package]]
 name = "fltk-sys"
-version = "1.5.0"
+version = "1.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02fe436baa9112e5b7f6fcce5274d6b3d9ba9108b29efd02f36f53e436da28da"
+checksum = "3ad90222381cd9820aef9b59f7991e3377c2a53f26b67008f2bb313bf3c6783e"
 dependencies = [
  "cmake",
  "cmk",
@@ -690,9 +690,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.135"
+version = "1.0.138"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b0d7ba2887406110130a978386c4e1befb98c674b4fba677954e4db976630d9"
+checksum = "d434192e7da787e94a6ea7e9670b26a036d0ca41e0b7efb2676dd32bae872949"
 dependencies = [
  "itoa",
  "memchr",
@@ -915,9 +915,9 @@ checksum = "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b"
 
 [[package]]
 name = "uuid"
-version = "1.11.1"
+version = "1.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b913a3b5fe84142e269d63cc62b64319ccaf89b748fc31fe025177f767a756c4"
+checksum = "b3758f5e68192bb96cc8f9b7e2c2cfdabb435499a28499a42f8f984092adad4b"
 dependencies = [
  "getrandom",
  "serde",
