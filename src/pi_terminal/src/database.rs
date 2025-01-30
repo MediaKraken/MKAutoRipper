@@ -11,9 +11,14 @@ impl LogType {
     pub const LOG_STEPS_RIGHT: u8 = 3;
     pub const LOG_STEPS_DOWN: u8 = 4;
     pub const LOG_STEPS_UP: u8 = 5;
-    pub const LOG_RELAY_WATER: u8 = 6;
-    pub const LOG_RELAY_LIGHT: u8 = 7;
-    pub const LOG_RELAY_VACCUUM: u8 = 8;
+    pub const LOG_STEPS_FORWARD: u8 = 6;
+    pub const LOG_STEPS_BACK: u8 = 7;
+    pub const LOG_RELAY_LIGHT: u8 = 8;
+    pub const LOG_RELAY_VACCUUM: u8 = 9;
+    pub const LOG_APP_START: u8 = 10;
+    pub const LOG_APP_EXIT: u8 = 11;
+    pub const LOG_APP_RIPPING_START: u8 = 12;
+    pub const LOG_APP_RIPPING_STOP: u8 = 13;
 }
 
 pub fn database_open() -> Result<sqlite::Connection, Box<dyn Error>> {
@@ -23,6 +28,8 @@ pub fn database_open() -> Result<sqlite::Connection, Box<dyn Error>> {
             steps_right INTEGER NOT NULL, \
             steps_down INTEGER NOT NULL, \
             steps_up INTEGER NOT NULL, \
+            steps_forward INTEGER NOT NULL, \
+            steps_back INTEGER NOT NULL, \
             images_taken INTEGER NOT NULL, \
             cd_ripped INTEGER NOT NULL, \
             dvd_ripped INTEGER NOT NULL, \
@@ -33,23 +40,27 @@ pub fn database_open() -> Result<sqlite::Connection, Box<dyn Error>> {
     db.execute(query).unwrap();
     let query = "CREATE TABLE IF NOT EXISTS logs \
             (log_type INTEGER NOT NULL, \
-            log_timestamp DATETIME NOT NULL, \
-            log_text TEXT)";
+            log_timestamp DATETIME NOT NULL)";
     db.execute(query).unwrap();
     Ok(db)
 }
 
-//pub fn database_close() -> Result<sqlx::Pool<Sqlite>, Box<dyn Error>> {}
+// cannot be called explicitly, drops when out of scope
+// pub fn database_insert_clpose(
+//     db: &sqlite::Connection,
+// ) -> Result<(), Box<dyn Error>> {
+//     db.drop();
+//     Ok(())
+// }
 
 pub fn database_insert_logs(
     db: &sqlite::Connection,
     log_type: u8,
-    log_text: &str,
 ) -> Result<(), Box<dyn Error>> {
     let query = format!(
-        "insert into logs (log_type, log_timestamp, log_text) \
-        values ({}, CURRENT_TIMESTAMP, {});",
-        log_type, log_text
+        "insert into logs (log_type, log_timestamp) \
+        values ({}, CURRENT_TIMESTAMP);",
+        log_type,
     );
     db.execute(query).unwrap();
     Ok(())

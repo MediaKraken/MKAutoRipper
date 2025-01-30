@@ -191,7 +191,12 @@ async fn main() {
         (24, vec![hardware_layout::DRIVETYPE_HDDVD], 700, 150, false),
     ];
     // connect to database
-    //let db_pool = database::database_open().unwrap();
+    let db_pool = database::database_open().unwrap();
+    let _result = database::database_insert_logs(
+        &db_pool,
+        database::LogType::LOG_RELAY_VACCUUM,
+    );
+
     let (_rabbit_connection, rabbit_channel) =
         rabbitmq::rabbitmq_connect("mkterminal").await.unwrap();
     let mut rabbit_consumer = rabbitmq::rabbitmq_consumer("mkterminal", &rabbit_channel)
@@ -646,9 +651,18 @@ async fn main() {
                     GPIO_STEPPER_TRAY_END_STOP_BACK,
                     false,
                 );
-                *position_camera_tray.borrow_mut() -= steps_taken.unwrap();
+                *position_camera_tray.borrow_mut() = 0;
+                let steps_taken = stepper::gpio_stepper_move(
+                    50, // TODO real number
+                    GPIO_STEPPER_TRAY_PULSE,
+                    GPIO_STEPPER_TRAY_DIRECTION,
+                    GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                    true,
+                );
+                *position_camera_tray.borrow_mut() += steps_taken.unwrap();
                 frame_position_camera_tray
                     .set_label(&format!("Tray: {}", &position_camera_tray.borrow()));
+
                 // move loader to top
                 let steps_taken = stepper::gpio_stepper_move(
                     i32::MAX,
@@ -657,9 +671,18 @@ async fn main() {
                     GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                     true,
                 );
-                *position_vertical.borrow_mut() += steps_taken.unwrap();
+                *position_vertical.borrow_mut() = 0;
+                let steps_taken = stepper::gpio_stepper_move(
+                    50, // TODO real number
+                    GPIO_STEPPER_VERTICAL_PULSE,
+                    GPIO_STEPPER_VERTICAL_DIRECTION,
+                    GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
+                    false,
+                );
+                *position_vertical.borrow_mut() -= steps_taken.unwrap();
                 frame_position_vertical
                     .set_label(&format!("Vert: {}", &position_vertical.borrow()));
+
                 // move gantry to far left
                 let steps_taken = stepper::gpio_stepper_move(
                     i32::MAX,
@@ -668,7 +691,15 @@ async fn main() {
                     GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                     false,
                 );
-                *position_horizontal.borrow_mut() -= steps_taken.unwrap();
+                *position_horizontal.borrow_mut() = 0;
+                let steps_taken = stepper::gpio_stepper_move(
+                    i32::MAX,
+                    GPIO_STEPPER_HORIZONTAL_PULSE,
+                    GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                    GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                    true,
+                );
+                *position_horizontal.borrow_mut() += steps_taken.unwrap();
                 frame_position_horizontal
                     .set_label(&format!("Horiz: {}", &position_horizontal.borrow()));
             }
