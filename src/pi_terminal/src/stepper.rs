@@ -10,6 +10,7 @@ pub fn gpio_stepper_move(
     direction_pin_number: u8,
     hard_stop_pin_number: u8,
     move_clockwise: bool,
+    motor_speed: u64,
 ) -> Result<i32, Box<dyn Error>> {
     let mut steps_moved: i32 = 0;
     let gpios = match Gpio::new() {
@@ -36,9 +37,9 @@ pub fn gpio_stepper_move(
     for _step_num in 0..steps_to_take {
         steps_moved += 1;
         stepper_pulse_output.set_high();
-        thread::sleep(Duration::from_micros(500));
+        thread::sleep(Duration::from_micros(motor_speed));
         stepper_pulse_output.set_low();
-        thread::sleep(Duration::from_micros(500));
+        thread::sleep(Duration::from_micros(motor_speed));
         // Check for hard stops
         if pin.is_low() {
             println!("Low");
