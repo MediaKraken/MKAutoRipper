@@ -47,6 +47,7 @@ const GPIO_STEPPER_TRAY_MOTOR_SPEED: u64 = 50;
 
 const GPIO_RELAY_VACUUM: u8 = 20;                           // 38
 const GPIO_RELAY_LIGHT: u8 = 16;                            // 36
+const GPIO_KILL_SWITCH: u8 = 255;                           // ??
 
 #[tokio::main]
 async fn main() {
