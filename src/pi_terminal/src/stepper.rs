@@ -26,7 +26,8 @@ pub fn gpio_stepper_move(
         Ok(stepper_direction_output) => stepper_direction_output.into_output(),
         Err(msg) => panic!("Error: {}", msg),
     };
-    let pin = gpios.get(hard_stop_pin_number)?.into_input_pullup();
+    //let pin = gpios.get(hard_stop_pin_number)?.into_input_pullup();
+    let pin = gpios.get(hard_stop_pin_number)?;
     // set direction
     if move_clockwise {
         stepper_direction_output.set_high();
@@ -41,7 +42,8 @@ pub fn gpio_stepper_move(
         stepper_pulse_output.set_low();
         thread::sleep(Duration::from_micros(motor_speed));
         // Check for hard stops
-        if pin.is_low() {
+        if pin.read() == rppal::gpio::Level::Low {
+        //if pin.is_low() {
             println!("Low");
             break;
         } // else {println!("Low")}
