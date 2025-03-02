@@ -26,8 +26,7 @@ pub fn gpio_stepper_move(
         Ok(stepper_direction_output) => stepper_direction_output.into_output(),
         Err(msg) => panic!("Error: {}", msg),
     };
-    //let pin = gpios.get(hard_stop_pin_number)?.into_input_pullup();
-    let pin = gpios.get(hard_stop_pin_number)?;
+    let pin = gpios.get(hard_stop_pin_number)?.into_input_pullup();
     // set direction
     if move_clockwise {
         stepper_direction_output.set_high();
