@@ -13,7 +13,6 @@ mod gpio;
 
 // BCM pin numbering! Do not use physcial pin numbers.
 // Main movement arm
-//const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 25; // 22
 const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13; // 33
 const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 21; // 40
 const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 26; // 37
@@ -61,11 +60,14 @@ pub async fn main() {
         .unwrap()
         .into_input_pullup();
     while true {
-        if pin_input.is_high() {
-            println!("High Input");
-        } else {
+        if pin_input.is_low() {
             println!("Low Input");
-            break;
+        } else {
+            sleep(Duration::from_millis(50)).await;
+            if pin_input.is_low() {
+                println!("Low Input 2");
+                break;
+            }
         }
     }
 }
