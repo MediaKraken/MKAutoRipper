@@ -13,8 +13,8 @@ mod gpio;
 
 // BCM pin numbering! Do not use physcial pin numbers.
 // Main movement arm
-const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 25; // 22
-                                                      //const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13; // 33
+//const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 25; // 22
+const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13; // 33
 const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 21; // 40
 const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 26; // 37
 const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 19; // 35
@@ -47,19 +47,23 @@ pub async fn main() {
     // Retrieve a Pin without converting it to an InputPin,
     // OutputPin or IoPin, so we can check the pin's mode
     // and level without affecting its state.
-    let pin = gpios.get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT).unwrap();
+    // let pin = gpios.get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT).unwrap();
+    // while true {
+    //     if pin.read() == rppal::gpio::Level::High {
+    //         println!("High");
+    //     } else {
+    //         println!("Low");
+    //     }
+    // }
+    let pin_input = gpios
+        .get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT)
+        .unwrap()
+        .into_input_pullup();
     while true {
-        if pin.read() == rppal::gpio::Level::High {
-            println!("High");
+        if pin_input.is_high() {
+            println!("High Input");
         } else {
-            println!("Low");
+            println!("Low Input");
         }
     }
-    // let pin_input = gpios.get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT).unwrap().into_input_pullup();
-    // if pin_input.is_high() {
-    //     println!("High Input");
-    // }
-    // else {
-    //     println!("Low Input");
-    // }
 }
