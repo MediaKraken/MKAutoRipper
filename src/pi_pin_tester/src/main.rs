@@ -53,6 +53,7 @@ pub async fn main() {
     //         println!("High");
     //     } else {
     //         println!("Low");
+    //         break;
     //     }
     // }
     let pin_input = gpios
@@ -64,6 +65,7 @@ pub async fn main() {
             println!("High Input");
         } else {
             println!("Low Input");
+            break;
         }
     }
 }
