@@ -409,7 +409,7 @@ async fn main() {
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
-                true,
+                false,
                 GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() += steps_taken.unwrap();
@@ -429,7 +429,7 @@ async fn main() {
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
-                true,
+                false,
                 GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() += steps_taken.unwrap();
@@ -449,7 +449,7 @@ async fn main() {
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
-                false,
+                true,
                 GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() -= steps_taken.unwrap();
@@ -467,7 +467,7 @@ async fn main() {
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
-                false,
+                true,
                 GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() -= steps_taken.unwrap();
