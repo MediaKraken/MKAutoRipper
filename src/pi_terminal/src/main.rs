@@ -24,7 +24,7 @@ mod stepper;
 
 // BCM pin numbering! Do not use physcial pin numbers.
 // Main movement arm
-const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 25;       // 22
+const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13;       // 33
 const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 21;      // 40
 const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 26;           // 37
 const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 19;               // 35
