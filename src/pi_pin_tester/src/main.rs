@@ -46,28 +46,28 @@ pub async fn main() {
     // Retrieve a Pin without converting it to an InputPin,
     // OutputPin or IoPin, so we can check the pin's mode
     // and level without affecting its state.
-    // let pin = gpios.get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT).unwrap();
-    // while true {
-    //     if pin.read() == rppal::gpio::Level::High {
-    //         println!("High");
-    //     } else {
-    //         println!("Low");
-    //         break;
-    //     }
-    // }
-    let pin_input = gpios
-        .get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT)
-        .unwrap()
-        .into_input_pullup();
+    let pin = gpios.get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT).unwrap();
     while true {
-        if pin_input.is_low() {
-            println!("Low Input");
+        if pin.read() == rppal::gpio::Level::High {
+            println!("High");
         } else {
-            sleep(Duration::from_millis(50)).await;
-            if pin_input.is_low() {
-                println!("Low Input 2");
-                break;
-            }
+            println!("Low");
+            break;
         }
     }
+    // let pin_input = gpios
+    //     .get(GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT)
+    //     .unwrap()
+    //     .into_input_pullup();
+    // while true {
+    //     if pin_input.is_low() {
+    //         println!("Low Input");
+    //     } else {
+    //         sleep(Duration::from_millis(50)).await;
+    //         if pin_input.is_low() {
+    //             println!("Low Input 2");
+    //             break;
+    //         }
+    //     }
+    // }
 }
