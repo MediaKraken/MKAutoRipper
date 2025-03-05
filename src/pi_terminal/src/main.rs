@@ -19,7 +19,6 @@ mod database;
 mod gpio;
 mod hardware_layout;
 mod rabbitmq;
-mod servo;
 mod stepper;
 
 // BCM pin numbering! Do not use physcial pin numbers.
@@ -187,8 +186,8 @@ async fn main() {
         (18, vec![hardware_layout::DRIVETYPE_BRAY], 500, 300, false),
         (19, vec![hardware_layout::DRIVETYPE_BRAY], 500, 400, false),
         // 6th row of drives
-        (20, vec![hardware_layout::DRIVETYPE_BRAY], 600, 100, false),
-        (21, vec![hardware_layout::DRIVETYPE_BRAY], 600, 200, false),
+        (20, vec![hardware_layout::DRIVETYPE_UHD], 600, 100, false),
+        (21, vec![hardware_layout::DRIVETYPE_UHD], 600, 200, false),
         (22, vec![hardware_layout::DRIVETYPE_UHD], 600, 300, false),
         (23, vec![hardware_layout::DRIVETYPE_UHD], 600, 400, false),
         // top row of drives
