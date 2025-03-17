@@ -634,21 +634,21 @@ async fn main() {
 
     button_snapshot.set_callback(move |_| {
         let _result = gpio::gpio_set_pin(true, GPIO_RELAY_LIGHT);
-        let _result = database::database_insert_logs(
-            &db_pool,
-            database::LogType::LOG_RELAY_LIGHT,
-        );
+        // let _result = database::database_insert_logs(
+        //     &db_pool,
+        //     database::LogType::LOG_RELAY_LIGHT,
+        // );
         let _result = camera::camera_take_image("demo.png");
-        let _result = database::database_insert_logs(
-            &db_pool,
-            database::LogType::LOG_SNAPSHOT,
-        );
-        let _result = database::database_update_totals(&db_pool, "images_taken", 1);
+        // let _result = database::database_insert_logs(
+        //     &db_pool,
+        //     database::LogType::LOG_SNAPSHOT,
+        // );
+        //let _result = database::database_update_totals(&db_pool, "images_taken", 1);
         let _result = gpio::gpio_set_pin(false, GPIO_RELAY_LIGHT);
-        let _result = database::database_insert_logs(
-            &db_pool,
-            database::LogType::LOG_RELAY_LIGHT,
-        );
+        // let _result = database::database_insert_logs(
+        //     &db_pool,
+        //     database::LogType::LOG_RELAY_LIGHT,
+        // );
     });
 
     button_zero.set_callback(
@@ -888,7 +888,7 @@ async fn main() {
                             );
                             *position_horizontal.borrow_mut() += steps_taken.unwrap();
 
-3                            // move camera plate out
+                            // move camera plate out
                             let steps_taken = stepper::gpio_stepper_move(
                                 hardware_layout::CAMERA_PLATE_STEPS,
                                 GPIO_STEPPER_TRAY_PULSE,
