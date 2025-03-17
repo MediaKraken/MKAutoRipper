@@ -276,7 +276,7 @@ async fn main() {
     let mut container_status = Pack::new(10, 90, 300, 375, "Status");
 
     let mut status_table = SmartTable::default()
-        .with_size(300, 375)
+        .with_size(300, 365)
         .center_of_parent()
         .with_opts(TableOpts {
             rows: 24,
@@ -293,10 +293,10 @@ async fn main() {
     let mut container_info = Pack::new(325, 90, 250, 250, "Info");
 
     let mut info_table = SmartTable::default()
-        .with_size(250, 350)
+        .with_size(250, 300)
         .center_of_parent()
         .with_opts(TableOpts {
-            rows: 12,
+            rows: 5,
             cols: 2,
             editable: false,
             ..Default::default()
