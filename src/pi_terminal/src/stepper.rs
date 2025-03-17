@@ -34,15 +34,20 @@ pub fn gpio_stepper_move(
         stepper_direction_output.set_low();
     }
     // move the number of steps
+    let mut pin_check = 0;
     for _step_num in 0..steps_to_take {
         steps_moved += 1;
+        pin_check += 1;
         stepper_pulse_output.set_high();
         thread::sleep(Duration::from_micros(motor_speed));
         stepper_pulse_output.set_low();
         thread::sleep(Duration::from_micros(motor_speed));
         // Check for hard stops
-        if pin.read() == rppal::gpio::Level::Low {
-            break;
+        if pin_check == 10 {
+            pin_check = 0;
+            if pin.read() == rppal::gpio::Level::Low {
+                break;
+            }
         }
     }
     Ok(steps_moved)
