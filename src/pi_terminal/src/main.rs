@@ -210,10 +210,9 @@ async fn main() {
     let position_vertical = Rc::new(RefCell::new(0));
     let position_camera_tray = Rc::new(RefCell::new(0));
 
-    let mut win = Window::new(0, 0, 800, 480, "pi_terminal for autoripper");
+    let mut win = Window::new(0, 0, 800, 460, "pi_terminal for autoripper");
 
     let mut container_spindle = Pack::new(10, 25, 300, 35, "Spindle Type");
-
     // setup control for spindle media
     let mut choice_spindle_1_media_type = choice::MyChoice::new(20, 20, 80, 30, None);
     choice_spindle_1_media_type.add_choices(&[
