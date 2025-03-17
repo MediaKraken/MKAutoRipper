@@ -268,24 +268,6 @@ async fn main() {
         .frame()
         .set_frame(FrameType::BorderBox);
 
-    // setup control for spindle media
-    let mut choice_spindle_4_media_type = choice::MyChoice::new(20, 320, 80, 30, None);
-    choice_spindle_4_media_type.add_choices(&[
-        hardware_layout::DRIVETYPE_NONE,
-        hardware_layout::DRIVETYPE_CD,
-        hardware_layout::DRIVETYPE_DVD,
-        hardware_layout::DRIVETYPE_BRAY,
-        hardware_layout::DRIVETYPE_UHD,
-        hardware_layout::DRIVETYPE_HDDVD,
-    ]);
-    choice_spindle_4_media_type.set_current_choice(0);
-    choice_spindle_4_media_type
-        .button()
-        .set_frame(FrameType::BorderBox);
-    choice_spindle_4_media_type
-        .frame()
-        .set_frame(FrameType::BorderBox);
-
     container_spindle.end();
     container_spindle.set_frame(FrameType::BorderFrame);
     container_spindle.set_color(Color::Black);
@@ -297,7 +279,7 @@ async fn main() {
         .with_size(300, 375)
         .center_of_parent()
         .with_opts(TableOpts {
-            rows: 6,
+            rows: 24,
             cols: 3,
             editable: false,
             ..Default::default()
@@ -754,7 +736,6 @@ async fn main() {
     let mut spindle_one_media_left = false;
     let mut spindle_two_media_left = false;
     let mut spindle_three_media_left = false;
-    let mut spindle_four_media_left = false;
     loop {
         // check for HARD stop
         if hard_stop {
@@ -769,9 +750,6 @@ async fn main() {
             }
             if choice_spindle_3_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
                 spindle_three_media_left = true;
-            }
-            if choice_spindle_4_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
-                spindle_four_media_left = true;
             }
             initial_start = false;
         }
@@ -1046,18 +1024,6 @@ async fn main() {
             // TODO do I zero first or do math?
             let steps_taken = stepper::gpio_stepper_move(
                 hardware_layout::INPUT_SPINDLE_LOCATIONS[2],
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
-                true,
-                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
-            );
-            *position_horizontal.borrow_mut() += steps_taken.unwrap();
-        }
-        if spindle_four_media_left {
-            // TODO do I zero first or do math?
-            let steps_taken = stepper::gpio_stepper_move(
-                hardware_layout::INPUT_SPINDLE_LOCATIONS[3],
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
