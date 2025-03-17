@@ -232,7 +232,7 @@ async fn main() {
         .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_2_media_type = choice::MyChoice::new(20, 120, 80, 30, None);
+    let mut choice_spindle_2_media_type = choice::MyChoice::new(20, 130, 80, 30, None);
     choice_spindle_2_media_type.add_choices(&[
         hardware_layout::DRIVETYPE_NONE,
         hardware_layout::DRIVETYPE_CD,
@@ -250,7 +250,7 @@ async fn main() {
         .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_3_media_type = choice::MyChoice::new(20, 220, 80, 30, None);
+    let mut choice_spindle_3_media_type = choice::MyChoice::new(20, 240, 80, 30, None);
     choice_spindle_3_media_type.add_choices(&[
         hardware_layout::DRIVETYPE_NONE,
         hardware_layout::DRIVETYPE_CD,
