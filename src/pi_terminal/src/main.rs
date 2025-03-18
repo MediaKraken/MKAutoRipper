@@ -7,8 +7,9 @@ use rppal::spi::{Bus, Mode, SlaveSelect, Spi};
 use rppal::uart::{Parity, Uart};
 use serde_json::{json, Value};
 use std::error::Error;
-use std::{fs, i32};
+use std::path::Path;
 use std::{cell::RefCell, rc::Rc};
+use std::{fs, i32};
 use tokio::time::{sleep, Duration};
 use uuid::Uuid;
 
@@ -23,30 +24,30 @@ mod stepper;
 
 // BCM pin numbering! Do not use physcial pin numbers.
 // Main movement arm
-const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13;       // 33
-const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 25;      // 22
-const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 26;           // 37
-const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 19;               // 35
+const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13; // 33
+const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 25; // 22
+const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 26; // 37
+const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 19; // 35
 const GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED: u64 = 2;
 
 // CD Picker/loader
-const GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY: u8 = 27;     // 13
-const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 22;       // 15
-const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 10;          // 19
-const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 11;             // 23
-const GPIO_STEPPER_VERTICAL_PULSE: u8 = 9;                  // 21
+const GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY: u8 = 27; // 13
+const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 22; // 15
+const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 10; // 19
+const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 11; // 23
+const GPIO_STEPPER_VERTICAL_PULSE: u8 = 9; // 21
 const GPIO_STEPPER_VERTICAL_MOTOR_SPEED: u64 = 50;
 
 // Image tray
-const GPIO_STEPPER_TRAY_END_STOP_BACK: u8 = 17;             // 11
-const GPIO_STEPPER_TRAY_END_STOP_FRONT: u8 = 18;            // 12
-const GPIO_STEPPER_TRAY_DIRECTION: u8 = 24;                 // 18
-const GPIO_STEPPER_TRAY_PULSE: u8 = 23;                     // 16
+const GPIO_STEPPER_TRAY_END_STOP_BACK: u8 = 17; // 11
+const GPIO_STEPPER_TRAY_END_STOP_FRONT: u8 = 18; // 12
+const GPIO_STEPPER_TRAY_DIRECTION: u8 = 24; // 18
+const GPIO_STEPPER_TRAY_PULSE: u8 = 23; // 16
 const GPIO_STEPPER_TRAY_MOTOR_SPEED: u64 = 50;
 
-const GPIO_RELAY_VACUUM: u8 = 20;                           // 38
-const GPIO_RELAY_LIGHT: u8 = 16;                            // 36
-const GPIO_KILL_SWITCH: u8 = 255;                           // ??
+const GPIO_RELAY_VACUUM: u8 = 20; // 38
+const GPIO_RELAY_LIGHT: u8 = 16; // 36
+const GPIO_KILL_SWITCH: u8 = 255; // ??
 
 #[tokio::main]
 async fn main() {
@@ -214,7 +215,7 @@ async fn main() {
 
     let mut container_spindle = Pack::new(10, 25, 300, 35, "Spindle Type");
     // setup control for spindle media
-    let mut choice_spindle_1_media_type = choice::MyChoice::new(20, 20, 80, 30, None);
+    let mut choice_spindle_1_media_type = choice::MyChoice::new(20, 20, 120, 30, None);
     choice_spindle_1_media_type.add_choices(&[
         hardware_layout::DRIVETYPE_NONE,
         hardware_layout::DRIVETYPE_CD,
@@ -232,7 +233,7 @@ async fn main() {
         .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_2_media_type = choice::MyChoice::new(20, 150, 80, 30, None);
+    let mut choice_spindle_2_media_type = choice::MyChoice::new(20, 175, 120, 30, None);
     choice_spindle_2_media_type.add_choices(&[
         hardware_layout::DRIVETYPE_NONE,
         hardware_layout::DRIVETYPE_CD,
@@ -250,7 +251,7 @@ async fn main() {
         .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_3_media_type = choice::MyChoice::new(20, 280, 80, 30, None);
+    let mut choice_spindle_3_media_type = choice::MyChoice::new(20, 280, 120, 30, None);
     choice_spindle_3_media_type.add_choices(&[
         hardware_layout::DRIVETYPE_NONE,
         hardware_layout::DRIVETYPE_CD,
@@ -289,10 +290,10 @@ async fn main() {
     container_status.set_color(Color::Black);
     container_status.set_type(PackType::Horizontal);
 
-    let mut container_info = Pack::new(325, 90, 250, 250, "Info");
+    let mut container_info = Pack::new(325, 90, 225, 150, "Info");
 
     let mut info_table = SmartTable::default()
-        .with_size(250, 250)
+        .with_size(225, 150)
         .center_of_parent()
         .with_opts(TableOpts {
             rows: 5,
@@ -300,9 +301,15 @@ async fn main() {
             editable: false,
             ..Default::default()
         });
+    info_table.set_col_width(1, 140);
+    info_table.set_row_header_width(0);
     info_table.set_cell_value(0, 0, "Model");
-    let pi_model = fs::read_to_string("/sys/firmware/devicetree/base/model").unwrap();
-    info_table.set_cell_value(0, 1, &pi_model);
+    if Path::new("/sys/firmware/devicetree/base/model").exists() {
+        let pi_model = fs::read_to_string("/sys/firmware/devicetree/base/model").unwrap();
+        info_table.set_cell_value(0, 1, &pi_model);
+    } else {
+        info_table.set_cell_value(0, 1, "Desktop");
+    }
     info_table.set_cell_value(1, 0, "Memory");
     info_table.set_cell_value(
         1,
@@ -607,10 +614,8 @@ async fn main() {
         // toggle vacuum
         gpio_relay_vacuum_on = !gpio_relay_vacuum_on;
         let _result = gpio::gpio_set_pin(gpio_relay_vacuum_on, GPIO_RELAY_VACUUM);
-        let _result = database::database_insert_logs(
-            &db_pool,
-            database::LogType::LOG_RELAY_VACCUUM,
-        );
+        let _result =
+            database::database_insert_logs(&db_pool, database::LogType::LOG_RELAY_VACCUUM);
     });
 
     button_snapshot.set_callback(move |_| {
@@ -1034,5 +1039,5 @@ async fn main() {
         sleep(Duration::from_secs(1)).await;
     }
 
-//    app.run().unwrap();
+    //    app.run().unwrap();
 }
