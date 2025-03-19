@@ -273,10 +273,10 @@ async fn main() {
     container_spindle.set_color(Color::Black);
     container_spindle.set_type(PackType::Horizontal);
 
-    let mut container_status = Pack::new(10, 90, 300, 375, "Status");
+    let mut container_status = Pack::new(10, 90, 320, 375, "Status");
 
     let mut status_table = SmartTable::default()
-        .with_size(300, 350)
+        .with_size(320, 350)
         .center_of_parent()
         .with_opts(TableOpts {
             rows: 24,
@@ -289,8 +289,7 @@ async fn main() {
     container_status.set_frame(FrameType::BorderFrame);
     container_status.set_color(Color::Black);
     container_status.set_type(PackType::Horizontal);
-
-    let mut container_info = Pack::new(325, 90, 225, 150, "Info");
+    let mut container_info = Pack::new(345, 90, 225, 150, "Info");
 
     let mut info_table = SmartTable::default()
         .with_size(225, 150)
@@ -340,7 +339,7 @@ async fn main() {
     container_info.set_color(Color::Black);
     container_info.set_type(PackType::Horizontal);
 
-    let mut container_position = Pack::new(625, 25, 150, 40, "Position - step(s)");
+    let mut container_position = Pack::new(590, 25, 200, 40, "Position - step(s)");
 
     let mut frame_position_horizontal = Frame::default().with_size(40, 20).with_label("Horiz: 0");
     let mut frame_position_vertical = Frame::default().with_size(40, 20).with_label("Vert: 0");
@@ -378,7 +377,7 @@ async fn main() {
     let mut button_stop = Button::new(650, 390, 150, 60, "Stop!");
 
     // exit
-    let mut button_exit = Button::new(325, 390, 150, 60, "EXIT!");
+    let mut button_exit = Button::new(345, 390, 150, 60, "EXIT!");
 
     win.end();
     win.show();
