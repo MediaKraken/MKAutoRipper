@@ -733,28 +733,24 @@ async fn main() {
     app.run().unwrap();
 
     // launch thread to do the actual processing of the discs
-    //    let _handle_tmdb = tokio::spawn(async move {
-    //let db_pool = database::database_open().unwrap();
+    //    let _handle_tmdb = tokio::spawn(async move {=
     let mut initial_start = true;
     let mut spindle_one_media_left = false;
     let mut spindle_two_media_left = false;
     let mut spindle_three_media_left = false;
+    if choice_spindle_1_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
+        spindle_one_media_left = true;
+    }
+    if choice_spindle_2_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
+        spindle_two_media_left = true;
+    }
+    if choice_spindle_3_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
+        spindle_three_media_left = true;
+    }
     loop {
         // check for HARD stop
         if hard_stop {
             break;
-        }
-        if initial_start {
-            if choice_spindle_1_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
-                spindle_one_media_left = true;
-            }
-            if choice_spindle_2_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
-                spindle_two_media_left = true;
-            }
-            if choice_spindle_3_media_type.choice() != hardware_layout::DRIVETYPE_NONE {
-                spindle_three_media_left = true;
-            }
-            initial_start = false;
         }
         // grab message from rabbitmq if one is available
         let msg = rabbit_consumer.recv().await;
@@ -788,6 +784,7 @@ async fn main() {
                 // TODO set the drive back to empty
                 // TODO raise arm if needed
                 // TODO place media at exit spindle
+                // TODO place media at drop height
                 // drop media
                 let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
             }
@@ -1037,6 +1034,4 @@ async fn main() {
         }
         sleep(Duration::from_secs(1)).await;
     }
-
-    //    app.run().unwrap();
 }
