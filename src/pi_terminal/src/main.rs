@@ -12,6 +12,7 @@ use std::{cell::RefCell, rc::Rc};
 use std::{fs, i32};
 use tokio::time::{sleep, Duration};
 use uuid::Uuid;
+//use std::borrow::Borrow;
 
 mod byte_size;
 mod camera;
@@ -49,6 +50,19 @@ const GPIO_RELAY_VACUUM: u8 = 20; // 38
 const GPIO_RELAY_LIGHT: u8 = 16; // 36
 const GPIO_KILL_SWITCH: u8 = 255; // ??
 
+pub async fn find_steps_to_take(choice_string: &str) -> i32 {
+    let mut steps_to_move: i32 = 1;
+    match choice_string {
+        "10 Steps" => steps_to_move = 10,
+        "100 Steps" => steps_to_move = 100,
+        "1,000 Steps" => steps_to_move = 1000,
+        "10,000 Steps" => steps_to_move = 10000,
+        "100,000 Steps" => steps_to_move = 100000,
+        _ => {}
+    }
+    steps_to_move
+}
+
 #[tokio::main]
 async fn main() {
     // drive number, allowed media types, horizontal, vertical, in use
@@ -60,8 +74,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            100,
-            100,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[0],
+            hardware_layout::DRIVE_ROW_LOCATIONS[0],
             false,
         ),
         (
@@ -70,8 +84,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            100,
-            200,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[1],
+            hardware_layout::DRIVE_ROW_LOCATIONS[0],
             false,
         ),
         (
@@ -80,8 +94,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            100,
-            300,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[2],
+            hardware_layout::DRIVE_ROW_LOCATIONS[0],
             false,
         ),
         (
@@ -90,8 +104,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            100,
-            400,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[3],
+            hardware_layout::DRIVE_ROW_LOCATIONS[0],
             false,
         ),
         // 2nd row of drives
@@ -101,8 +115,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            200,
-            100,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[0],
+            hardware_layout::DRIVE_ROW_LOCATIONS[1],
             false,
         ),
         (
@@ -111,8 +125,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            200,
-            200,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[1],
+            hardware_layout::DRIVE_ROW_LOCATIONS[1],
             false,
         ),
         (
@@ -121,8 +135,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            200,
-            300,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[2],
+            hardware_layout::DRIVE_ROW_LOCATIONS[1],
             false,
         ),
         (
@@ -131,8 +145,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            200,
-            400,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[3],
+            hardware_layout::DRIVE_ROW_LOCATIONS[1],
             false,
         ),
         // 3rd row of drives
@@ -142,8 +156,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            300,
-            100,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[0],
+            hardware_layout::DRIVE_ROW_LOCATIONS[2],
             false,
         ),
         (
@@ -152,8 +166,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            300,
-            200,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[1],
+            hardware_layout::DRIVE_ROW_LOCATIONS[2],
             false,
         ),
         (
@@ -162,8 +176,8 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            300,
-            300,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[2],
+            hardware_layout::DRIVE_ROW_LOCATIONS[2],
             false,
         ),
         (
@@ -172,27 +186,105 @@ async fn main() {
                 hardware_layout::DRIVETYPE_CD,
                 hardware_layout::DRIVETYPE_DVD,
             ],
-            300,
-            400,
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[3],
+            hardware_layout::DRIVE_ROW_LOCATIONS[2],
             false,
         ),
         // 4th row of drives
-        (12, vec![hardware_layout::DRIVETYPE_BRAY], 400, 100, false),
-        (13, vec![hardware_layout::DRIVETYPE_BRAY], 400, 200, false),
-        (14, vec![hardware_layout::DRIVETYPE_BRAY], 400, 300, false),
-        (15, vec![hardware_layout::DRIVETYPE_BRAY], 400, 400, false),
+        (
+            12,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[0],
+            hardware_layout::DRIVE_ROW_LOCATIONS[3],
+            false,
+        ),
+        (
+            13,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[1],
+            hardware_layout::DRIVE_ROW_LOCATIONS[3],
+            false,
+        ),
+        (
+            14,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[2],
+            hardware_layout::DRIVE_ROW_LOCATIONS[3],
+            false,
+        ),
+        (
+            15,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[3],
+            hardware_layout::DRIVE_ROW_LOCATIONS[3],
+            false,
+        ),
         // 5th row of drives
-        (16, vec![hardware_layout::DRIVETYPE_BRAY], 500, 100, false),
-        (17, vec![hardware_layout::DRIVETYPE_BRAY], 500, 200, false),
-        (18, vec![hardware_layout::DRIVETYPE_BRAY], 500, 300, false),
-        (19, vec![hardware_layout::DRIVETYPE_BRAY], 500, 400, false),
+        (
+            16,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[0],
+            hardware_layout::DRIVE_ROW_LOCATIONS[4],
+            false,
+        ),
+        (
+            17,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[1],
+            hardware_layout::DRIVE_ROW_LOCATIONS[4],
+            false,
+        ),
+        (
+            18,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[2],
+            hardware_layout::DRIVE_ROW_LOCATIONS[4],
+            false,
+        ),
+        (
+            19,
+            vec![hardware_layout::DRIVETYPE_BRAY],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[3],
+            hardware_layout::DRIVE_ROW_LOCATIONS[4],
+            false,
+        ),
         // 6th row of drives
-        (20, vec![hardware_layout::DRIVETYPE_UHD], 600, 100, false),
-        (21, vec![hardware_layout::DRIVETYPE_UHD], 600, 200, false),
-        (22, vec![hardware_layout::DRIVETYPE_UHD], 600, 300, false),
-        (23, vec![hardware_layout::DRIVETYPE_UHD], 600, 400, false),
-        // top row of drives
-        (24, vec![hardware_layout::DRIVETYPE_HDDVD], 700, 150, false),
+        (
+            20,
+            vec![hardware_layout::DRIVETYPE_UHD],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[0],
+            hardware_layout::DRIVE_ROW_LOCATIONS[5],
+            false,
+        ),
+        (
+            21,
+            vec![hardware_layout::DRIVETYPE_UHD],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[1],
+            hardware_layout::DRIVE_ROW_LOCATIONS[5],
+            false,
+        ),
+        (
+            22,
+            vec![hardware_layout::DRIVETYPE_UHD],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[2],
+            hardware_layout::DRIVE_ROW_LOCATIONS[5],
+            false,
+        ),
+        (
+            23,
+            vec![hardware_layout::DRIVETYPE_UHD],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[3],
+            hardware_layout::DRIVE_ROW_LOCATIONS[5],
+            false,
+        ),
+        // top row of drives - hddvd
+        (
+            24,
+            vec![hardware_layout::DRIVETYPE_HDDVD],
+            hardware_layout::DRIVE_COLUMN_LOCATIONS[4],
+            hardware_layout::DRIVE_ROW_LOCATIONS[6],
+            false,
+        ),
     ];
     // connect to database
     let db_pool = database::database_open().unwrap();
@@ -339,6 +431,48 @@ async fn main() {
     container_info.set_color(Color::Black);
     container_info.set_type(PackType::Horizontal);
 
+    let mut container_action = Pack::new(345, 265, 225, 35, "Action Type");
+    let mut container_action_type = choice::MyChoice::new(20, 20, 225, 35, None);
+    container_action_type.add_choices(&[
+        "1 Step",
+        "10 Steps",
+        "100 Steps",
+        "1,000 Steps",
+        "10,000 Steps",
+        "100,000 Steps",
+        "Input One",
+        "Input Two",
+        "Input Three",
+        "Output One",
+        "Output Two",
+        "Output Three",
+        "Output Four",
+        "Drive Column One",
+        "Drive Column Two",
+        "Drive Column Three",
+        "Drive Column Four",
+        "Column Camera",
+        "Column HDDVD",
+        "Drive Row One",
+        "Drive Row Two",
+        "Drive Row Three",
+        "Drive Row Four",
+        "Row Camera",
+        "Row HDDVD",
+    ]);
+    container_action_type.set_current_choice(0);
+    container_action_type
+        .button()
+        .set_frame(FrameType::BorderBox);
+    container_action_type
+        .frame()
+        .set_frame(FrameType::BorderBox);
+    container_action.end();
+    container_action.set_frame(FrameType::BorderFrame);
+    container_action.set_color(Color::Black);
+    container_action.set_type(PackType::Horizontal);
+    let mut button_execute_combobox = Button::new(345, 310, 225, 40, "Execute Combobox");
+
     let mut container_position = Pack::new(590, 25, 200, 40, "Position - step(s)");
 
     let mut frame_position_horizontal = Frame::default().with_size(40, 20).with_label("Horiz: 0");
@@ -382,13 +516,124 @@ async fn main() {
     win.end();
     win.show();
 
+    button_execute_combobox.set_callback({
+        // horizontal
+        let position_horizontal = position_horizontal.clone();
+        let mut frame_position_horizontal = frame_position_horizontal.clone();
+        let position_horizontal_int = *(position_horizontal.borrow());
+        // vertical
+        let position_vertical = position_vertical.clone();
+        let mut frame_position_vertical = frame_position_vertical.clone();
+        let position_vertical_int = *(position_vertical.borrow());
+        let choice_string = container_action_type.choice();
+        move |_| {
+            let mut move_clockwise = false;
+            let mut steps_to_move: i32 = 0;
+            let mut hard_stop_pin = GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT;
+            match choice_string.as_str() {
+                "Input One" => {
+                    if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[0] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::INPUT_SPINDLE_LOCATIONS[0];
+                    } else {
+                        move_clockwise = true;
+                        hard_stop_pin = GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
+                    }
+                }
+                "Input Two" => {
+                    if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[1] {
+                    } else {
+                    }
+                }
+                "Input Three" => {
+                    if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[2] {
+                    } else {
+                    }
+                }
+                "Output One" => {
+                    if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[0] {
+                    } else {
+                    }
+                }
+                "Output Two" => {
+                    if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[1] {
+                    } else {
+                    }
+                }
+                "Output Three" => {
+                    if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[2] {
+                    } else {
+                    }
+                }
+                "Output Four" => {
+                    if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[3] {
+                    } else {
+                    }
+                }
+                "Drive Column One" => {
+                    if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[0] {
+                    } else {
+                    }
+                }
+                "Drive Column Two" => {
+                    if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[1] {
+                    } else {
+                    }
+                }
+                "Drive Column Three" => {
+                    if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[2] {
+                    } else {
+                    }
+                }
+                "Drive Column Four" => {
+                    if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[3] {
+                    } else {
+                    }
+                }
+                "Column Camera" => {
+                    if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[0] {
+                    } else {
+                    }
+                }
+                "Column HDDVD" => {
+                    if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[0] {
+                    } else {
+                    }
+                }
+                "Drive Row One" => {}
+                "Drive Row Two" => {}
+                "Drive Row Three" => {}
+                "Drive Row Four" => {}
+                "Row Camera" => {}
+                "Row HDDVD" => {}
+                _ => println!("ERROR! Bad Action Type"),
+            }
+            if steps_to_move != 0 {
+                let steps_taken = stepper::gpio_stepper_move(
+                    steps_to_move.abs(),
+                    GPIO_STEPPER_HORIZONTAL_PULSE,
+                    GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                    hard_stop_pin,
+                    move_clockwise,
+                    GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                );
+                *position_horizontal.borrow_mut() += steps_taken.unwrap();
+                frame_position_horizontal.set_label(&format!(
+                    "Horiz: {}",
+                    &position_horizontal.borrow().to_string()
+                ));
+            }
+        }
+    });
+
     // position button click processing
     button_right.set_callback({
         let position_horizontal = position_horizontal.clone();
         let mut frame_position_horizontal = frame_position_horizontal.clone();
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                1,
+                steps_to_move,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
@@ -426,9 +671,10 @@ async fn main() {
     button_left.set_callback({
         let position_horizontal = position_horizontal.clone();
         let mut frame_position_horizontal = frame_position_horizontal.clone();
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                1,
+                steps_to_move,
                 GPIO_STEPPER_HORIZONTAL_PULSE,
                 GPIO_STEPPER_HORIZONTAL_DIRECTION,
                 GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
@@ -462,9 +708,10 @@ async fn main() {
     button_up.set_callback({
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                1,
+                steps_to_move,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
                 GPIO_STEPPER_VERTICAL_END_STOP_TOP,
@@ -502,9 +749,10 @@ async fn main() {
     button_down.set_callback({
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                1,
+                steps_to_move,
                 GPIO_STEPPER_VERTICAL_PULSE,
                 GPIO_STEPPER_VERTICAL_DIRECTION,
                 GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
@@ -536,9 +784,10 @@ async fn main() {
     button_back.set_callback({
         let position_camera_tray = position_camera_tray.clone();
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                1,
+                steps_to_move,
                 GPIO_STEPPER_TRAY_PULSE,
                 GPIO_STEPPER_TRAY_DIRECTION,
                 GPIO_STEPPER_TRAY_END_STOP_BACK,
@@ -576,9 +825,10 @@ async fn main() {
     button_forward.set_callback({
         let position_camera_tray = position_camera_tray.clone();
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
-                1,
+                steps_to_move,
                 GPIO_STEPPER_TRAY_PULSE,
                 GPIO_STEPPER_TRAY_DIRECTION,
                 GPIO_STEPPER_TRAY_END_STOP_FRONT,
