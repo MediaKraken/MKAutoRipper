@@ -12,7 +12,7 @@ pub const CAMERA_LOCATION: (i32, i32) = (500, 1500);
 pub const SPINDLE_HEIGHT: i32 = 5000;
 pub const CAMERA_PLATE_STEPS: i32 = 500;
 
-pub const DRIVE_COLUMN_LOCATIONS: [i32; 4] = [0, 200, 400, 800];
+pub const DRIVE_COLUMN_LOCATIONS: [i32; 5] = [0, 200, 400, 800, 1200];
 pub const DRIVE_ROW_LOCATIONS: [i32; 7] = [1000, 1200, 1400, 1600, 3000, 6000, 9000];
 
 // BCM pin numbering! Do not use physcial pin numbers.
