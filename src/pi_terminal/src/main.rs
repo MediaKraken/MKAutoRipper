@@ -23,40 +23,16 @@ mod hardware_layout;
 mod rabbitmq;
 mod stepper;
 
-// BCM pin numbering! Do not use physcial pin numbers.
-// Main movement arm
-const GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT: u8 = 13; // 33
-const GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT: u8 = 25; // 22
-const GPIO_STEPPER_HORIZONTAL_DIRECTION: u8 = 26; // 37
-const GPIO_STEPPER_HORIZONTAL_PULSE: u8 = 19; // 35
-const GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED: u64 = 2;
-
-// CD Picker/loader
-const GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY: u8 = 27; // 13
-const GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM: u8 = 22; // 15
-const GPIO_STEPPER_VERTICAL_END_STOP_TOP: u8 = 10; // 19
-const GPIO_STEPPER_VERTICAL_DIRECTION: u8 = 11; // 23
-const GPIO_STEPPER_VERTICAL_PULSE: u8 = 9; // 21
-const GPIO_STEPPER_VERTICAL_MOTOR_SPEED: u64 = 50;
-
-// Image tray
-const GPIO_STEPPER_TRAY_END_STOP_BACK: u8 = 17; // 11
-const GPIO_STEPPER_TRAY_END_STOP_FRONT: u8 = 18; // 12
-const GPIO_STEPPER_TRAY_DIRECTION: u8 = 24; // 18
-const GPIO_STEPPER_TRAY_PULSE: u8 = 23; // 16
-const GPIO_STEPPER_TRAY_MOTOR_SPEED: u64 = 50;
-
-const GPIO_RELAY_VACUUM: u8 = 20; // 38
-const GPIO_RELAY_LIGHT: u8 = 16; // 36
-const GPIO_KILL_SWITCH: u8 = 255; // ??
-
 pub async fn find_steps_to_take(choice_string: &str) -> i32 {
     let mut steps_to_move: i32 = 1;
     match choice_string {
         "10 Steps" => steps_to_move = 10,
         "100 Steps" => steps_to_move = 100,
+        "500 Steps" => steps_to_move = 500,
         "1,000 Steps" => steps_to_move = 1000,
+        "5,000 Steps" => steps_to_move = 5000,
         "10,000 Steps" => steps_to_move = 10000,
+        "25,000 Steps" => steps_to_move = 25000,
         "100,000 Steps" => steps_to_move = 100000,
         _ => {}
     }
@@ -437,8 +413,11 @@ async fn main() {
         "1 Step",
         "10 Steps",
         "100 Steps",
+        "500 Steps",
         "1,000 Steps",
+        "5,000 Steps",
         "10,000 Steps",
+        "25,000 Steps",
         "100,000 Steps",
         "Input One",
         "Input Two",
@@ -529,7 +508,7 @@ async fn main() {
         move |_| {
             let mut move_clockwise = false;
             let mut steps_to_move: i32 = 0;
-            let mut hard_stop_pin = GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT;
+            let mut hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT;
             match choice_string.as_str() {
                 "Input One" => {
                     if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[0] {
@@ -537,7 +516,7 @@ async fn main() {
                             position_horizontal_int - hardware_layout::INPUT_SPINDLE_LOCATIONS[0];
                     } else {
                         move_clockwise = true;
-                        hard_stop_pin = GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Input Two" => {
@@ -611,11 +590,11 @@ async fn main() {
             if steps_to_move != 0 {
                 let steps_taken = stepper::gpio_stepper_move(
                     steps_to_move.abs(),
-                    GPIO_STEPPER_HORIZONTAL_PULSE,
-                    GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
                     hard_stop_pin,
                     move_clockwise,
-                    GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                 );
                 *position_horizontal.borrow_mut() += steps_taken.unwrap();
                 frame_position_horizontal.set_label(&format!(
@@ -634,11 +613,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 false,
-                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() += steps_taken.unwrap();
             frame_position_horizontal.set_label(&format!(
@@ -654,11 +633,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 i32::MAX,
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 false,
-                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() += steps_taken.unwrap();
             frame_position_horizontal.set_label(&format!(
@@ -675,11 +654,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                 true,
-                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() -= steps_taken.unwrap();
             frame_position_horizontal
@@ -693,11 +672,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 i32::MAX,
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                 true,
-                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() -= steps_taken.unwrap();
             frame_position_horizontal
@@ -712,11 +691,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
-                GPIO_STEPPER_VERTICAL_PULSE,
-                GPIO_STEPPER_VERTICAL_DIRECTION,
-                GPIO_STEPPER_VERTICAL_END_STOP_TOP,
+                hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                 true,
-                GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
             );
             *position_vertical.borrow_mut() += steps_taken.unwrap();
             frame_position_vertical.set_label(&format!(
@@ -732,11 +711,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 i32::MAX,
-                GPIO_STEPPER_VERTICAL_PULSE,
-                GPIO_STEPPER_VERTICAL_DIRECTION,
-                GPIO_STEPPER_VERTICAL_END_STOP_TOP,
+                hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                 true,
-                GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
             );
             *position_vertical.borrow_mut() += steps_taken.unwrap();
             frame_position_vertical.set_label(&format!(
@@ -753,11 +732,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
-                GPIO_STEPPER_VERTICAL_PULSE,
-                GPIO_STEPPER_VERTICAL_DIRECTION,
-                GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
+                hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
                 false,
-                GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
             );
             *position_vertical.borrow_mut() -= steps_taken.unwrap();
             frame_position_vertical.set_label(&format!("Vert: {}", &position_vertical.borrow()));
@@ -770,11 +749,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 i32::MAX,
-                GPIO_STEPPER_VERTICAL_PULSE,
-                GPIO_STEPPER_VERTICAL_DIRECTION,
-                GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
+                hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
                 false,
-                GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
             );
             *position_vertical.borrow_mut() -= steps_taken.unwrap();
             frame_position_vertical.set_label(&format!("Vert: {}", &position_vertical.borrow()));
@@ -788,11 +767,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
-                GPIO_STEPPER_TRAY_PULSE,
-                GPIO_STEPPER_TRAY_DIRECTION,
-                GPIO_STEPPER_TRAY_END_STOP_BACK,
+                hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                hardware_layout::GPIO_STEPPER_TRAY_END_STOP_BACK,
                 true,
-                GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
             );
             *position_camera_tray.borrow_mut() += steps_taken.unwrap();
             frame_position_camera_tray.set_label(&format!(
@@ -808,11 +787,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 i32::MAX,
-                GPIO_STEPPER_TRAY_PULSE,
-                GPIO_STEPPER_TRAY_DIRECTION,
-                GPIO_STEPPER_TRAY_END_STOP_BACK,
+                hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                hardware_layout::GPIO_STEPPER_TRAY_END_STOP_BACK,
                 true,
-                GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
             );
             *position_camera_tray.borrow_mut() += steps_taken.unwrap();
             frame_position_camera_tray.set_label(&format!(
@@ -829,11 +808,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
-                GPIO_STEPPER_TRAY_PULSE,
-                GPIO_STEPPER_TRAY_DIRECTION,
-                GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                hardware_layout::GPIO_STEPPER_TRAY_END_STOP_FRONT,
                 false,
-                GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
             );
             *position_camera_tray.borrow_mut() -= steps_taken.unwrap();
             frame_position_camera_tray
@@ -847,11 +826,11 @@ async fn main() {
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 i32::MAX,
-                GPIO_STEPPER_TRAY_PULSE,
-                GPIO_STEPPER_TRAY_DIRECTION,
-                GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                hardware_layout::GPIO_STEPPER_TRAY_END_STOP_FRONT,
                 false,
-                GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
             );
             *position_camera_tray.borrow_mut() -= steps_taken.unwrap();
             frame_position_camera_tray
@@ -862,13 +841,13 @@ async fn main() {
     button_vacuum.set_callback(move |_| {
         // toggle vacuum
         gpio_relay_vacuum_on = !gpio_relay_vacuum_on;
-        let _result = gpio::gpio_set_pin(gpio_relay_vacuum_on, GPIO_RELAY_VACUUM);
+        let _result = gpio::gpio_set_pin(gpio_relay_vacuum_on, hardware_layout::GPIO_RELAY_VACUUM);
         let _result =
             database::database_insert_logs(&db_pool, database::LogType::LOG_RELAY_VACCUUM);
     });
 
     button_snapshot.set_callback(move |_| {
-        let _result = gpio::gpio_set_pin(true, GPIO_RELAY_LIGHT);
+        let _result = gpio::gpio_set_pin(true, hardware_layout::GPIO_RELAY_LIGHT);
         // let _result = database::database_insert_logs(
         //     &db_pool,
         //     database::LogType::LOG_RELAY_LIGHT,
@@ -879,7 +858,7 @@ async fn main() {
         //     database::LogType::LOG_SNAPSHOT,
         // );
         //let _result = database::database_update_totals(&db_pool, "images_taken", 1);
-        let _result = gpio::gpio_set_pin(false, GPIO_RELAY_LIGHT);
+        let _result = gpio::gpio_set_pin(false, hardware_layout::GPIO_RELAY_LIGHT);
         // let _result = database::database_insert_logs(
         //     &db_pool,
         //     database::LogType::LOG_RELAY_LIGHT,
@@ -902,20 +881,20 @@ async fn main() {
                 // retract camera tray
                 let steps_taken = stepper::gpio_stepper_move(
                     i32::MAX,
-                    GPIO_STEPPER_TRAY_PULSE,
-                    GPIO_STEPPER_TRAY_DIRECTION,
-                    GPIO_STEPPER_TRAY_END_STOP_BACK,
+                    hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                    hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                    hardware_layout::GPIO_STEPPER_TRAY_END_STOP_BACK,
                     false,
-                    GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                    hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
                 );
                 *position_camera_tray.borrow_mut() = 0;
                 let steps_taken = stepper::gpio_stepper_move(
                     50, // TODO real number
-                    GPIO_STEPPER_TRAY_PULSE,
-                    GPIO_STEPPER_TRAY_DIRECTION,
-                    GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                    hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                    hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                    hardware_layout::GPIO_STEPPER_TRAY_END_STOP_FRONT,
                     true,
-                    GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                    hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
                 );
                 *position_camera_tray.borrow_mut() += steps_taken.unwrap();
                 frame_position_camera_tray
@@ -924,20 +903,20 @@ async fn main() {
                 // move loader to top
                 let steps_taken = stepper::gpio_stepper_move(
                     i32::MAX,
-                    GPIO_STEPPER_VERTICAL_PULSE,
-                    GPIO_STEPPER_VERTICAL_DIRECTION,
-                    GPIO_STEPPER_VERTICAL_END_STOP_TOP,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                     true,
-                    GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                 );
                 *position_vertical.borrow_mut() = 0;
                 let steps_taken = stepper::gpio_stepper_move(
                     50, // TODO real number
-                    GPIO_STEPPER_VERTICAL_PULSE,
-                    GPIO_STEPPER_VERTICAL_DIRECTION,
-                    GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
                     false,
-                    GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                    hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                 );
                 *position_vertical.borrow_mut() -= steps_taken.unwrap();
                 frame_position_vertical
@@ -946,20 +925,20 @@ async fn main() {
                 // move gantry to far left
                 let steps_taken = stepper::gpio_stepper_move(
                     i32::MAX,
-                    GPIO_STEPPER_HORIZONTAL_PULSE,
-                    GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                    GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                     false,
-                    GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                 );
                 *position_horizontal.borrow_mut() = 0;
                 let steps_taken = stepper::gpio_stepper_move(
                     i32::MAX,
-                    GPIO_STEPPER_HORIZONTAL_PULSE,
-                    GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                    GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                     true,
-                    GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                    hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                 );
                 *position_horizontal.borrow_mut() += steps_taken.unwrap();
                 frame_position_horizontal
@@ -1019,10 +998,10 @@ async fn main() {
                 .await
                 .unwrap();
                 // allow time to umount/eject
-                sleep(Duration::from_secs(5)).await;
+                sleep(Duration::from_secs(10)).await;
                 // TODO place arm for media pickup
                 // pick up media
-                let _result = gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
+                let _result = gpio::gpio_set_pin(true, hardware_layout::GPIO_RELAY_VACUUM);
                 // send rabbitmq message to close tray
                 rabbitmq::rabbitmq_publish(
                     rabbit_channel.clone(),
@@ -1036,7 +1015,7 @@ async fn main() {
                 // TODO place media at exit spindle
                 // TODO place media at drop height
                 // drop media
-                let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
+                let _result = gpio::gpio_set_pin(false, hardware_layout::GPIO_RELAY_VACUUM);
             }
         }
         // process next disc
@@ -1053,82 +1032,82 @@ async fn main() {
                         // raise the vertical to above the spindle
                         let steps_taken = stepper::gpio_stepper_move(
                             hardware_layout::SPINDLE_HEIGHT,
-                            GPIO_STEPPER_VERTICAL_PULSE,
-                            GPIO_STEPPER_VERTICAL_DIRECTION,
-                            GPIO_STEPPER_VERTICAL_END_STOP_TOP,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                             true,
-                            GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                         );
                         *position_vertical.borrow_mut() += steps_taken.unwrap();
                         // zero out the horizontal
                         let steps_taken = stepper::gpio_stepper_move(
                             i32::MAX,
-                            GPIO_STEPPER_HORIZONTAL_PULSE,
-                            GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                            GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                             false,
-                            GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                         );
                         *position_horizontal.borrow_mut() -= steps_taken.unwrap();
                         // move horizontal to spindle one location
                         let steps_taken = stepper::gpio_stepper_move(
                             hardware_layout::INPUT_SPINDLE_LOCATIONS[0],
-                            GPIO_STEPPER_HORIZONTAL_PULSE,
-                            GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                            GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                             true,
-                            GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                            hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                         );
                         *position_horizontal.borrow_mut() += steps_taken.unwrap();
                         // lower vertical to stop switch on assembly
                         let steps_taken = stepper::gpio_stepper_move(
                             5000, // TODO put in real number
-                            GPIO_STEPPER_VERTICAL_PULSE,
-                            GPIO_STEPPER_VERTICAL_DIRECTION,
-                            GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY,
                             false,
-                            GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                            hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                         );
                         *position_vertical.borrow_mut() -= steps_taken.unwrap();
                         // TODO if spindle stop switch triggers, turn off media switch and break
                         if *position_vertical.borrow() >= 0 {
                             // pick up media from spindle
                             let _result: Result<(), Box<dyn Error>> =
-                                gpio::gpio_set_pin(true, GPIO_RELAY_VACUUM);
+                                gpio::gpio_set_pin(true, hardware_layout::GPIO_RELAY_VACUUM);
                             // raise vertical to the camera level
                             let steps_taken = stepper::gpio_stepper_move(
                                 hardware_layout::CAMERA_LOCATION.1,
-                                GPIO_STEPPER_VERTICAL_PULSE,
-                                GPIO_STEPPER_VERTICAL_DIRECTION,
-                                GPIO_STEPPER_VERTICAL_END_STOP_TOP,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                                 true,
-                                GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                             );
                             *position_vertical.borrow_mut() += steps_taken.unwrap();
                             // move horizontal to camera
                             let steps_taken = stepper::gpio_stepper_move(
                                 hardware_layout::CAMERA_LOCATION.0,
-                                GPIO_STEPPER_HORIZONTAL_PULSE,
-                                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                                hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                                hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                                hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                                 true,
-                                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                                hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                             );
                             *position_horizontal.borrow_mut() += steps_taken.unwrap();
 
                             // move camera plate out
                             let steps_taken = stepper::gpio_stepper_move(
                                 hardware_layout::CAMERA_PLATE_STEPS,
-                                GPIO_STEPPER_TRAY_PULSE,
-                                GPIO_STEPPER_TRAY_DIRECTION,
-                                GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                                hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                                hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                                hardware_layout::GPIO_STEPPER_TRAY_END_STOP_FRONT,
                                 true,
-                                GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                                hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
                             );
                             *position_camera_tray.borrow_mut() += steps_taken.unwrap();
                             // turn on led
                             let _result: Result<(), Box<dyn Error>> =
-                                gpio::gpio_set_pin(true, GPIO_RELAY_LIGHT);
+                                gpio::gpio_set_pin(true, hardware_layout::GPIO_RELAY_LIGHT);
                             // generate path/name to use
                             let path_photo_name = Uuid::now_v7().to_string();
                             let _result =
@@ -1140,15 +1119,15 @@ async fn main() {
                             );
                             // turn off led
                             let _result: Result<(), Box<dyn Error>> =
-                                gpio::gpio_set_pin(false, GPIO_RELAY_LIGHT);
+                                gpio::gpio_set_pin(false, hardware_layout::GPIO_RELAY_LIGHT);
                             // move camera plate in
                             let steps_taken = stepper::gpio_stepper_move(
                                 hardware_layout::CAMERA_PLATE_STEPS,
-                                GPIO_STEPPER_TRAY_PULSE,
-                                GPIO_STEPPER_TRAY_DIRECTION,
-                                GPIO_STEPPER_TRAY_END_STOP_FRONT,
+                                hardware_layout::GPIO_STEPPER_TRAY_PULSE,
+                                hardware_layout::GPIO_STEPPER_TRAY_DIRECTION,
+                                hardware_layout::GPIO_STEPPER_TRAY_END_STOP_FRONT,
                                 false,
-                                GPIO_STEPPER_TRAY_MOTOR_SPEED,
+                                hardware_layout::GPIO_STEPPER_TRAY_MOTOR_SPEED,
                             );
                             *position_camera_tray.borrow_mut() -= steps_taken.unwrap();
                             // move horizontal to drive row
@@ -1159,11 +1138,11 @@ async fn main() {
                                     drive_layout[individual_drive_ndx].2 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
-                                    GPIO_STEPPER_HORIZONTAL_PULSE,
-                                    GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                                    GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                                     true,
-                                    GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                                 );
                                 *position_horizontal.borrow_mut() -= steps_taken.unwrap();
                             } else {
@@ -1172,11 +1151,11 @@ async fn main() {
                                     drive_layout[individual_drive_ndx].2 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
-                                    GPIO_STEPPER_HORIZONTAL_PULSE,
-                                    GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                                    GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT,
                                     false,
-                                    GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                                    hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
                                 );
                                 *position_horizontal.borrow_mut() += steps_taken.unwrap();
                             }
@@ -1188,11 +1167,11 @@ async fn main() {
                                     drive_layout[individual_drive_ndx].3 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
-                                    GPIO_STEPPER_VERTICAL_PULSE,
-                                    GPIO_STEPPER_VERTICAL_DIRECTION,
-                                    GPIO_STEPPER_VERTICAL_END_STOP_TOP,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_TOP,
                                     true,
-                                    GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                                 );
                                 *position_vertical.borrow_mut() -= steps_taken.unwrap();
                             } else {
@@ -1201,11 +1180,11 @@ async fn main() {
                                     drive_layout[individual_drive_ndx].3 - current_position;
                                 let steps_taken = stepper::gpio_stepper_move(
                                     steps_to_take,
-                                    GPIO_STEPPER_VERTICAL_PULSE,
-                                    GPIO_STEPPER_VERTICAL_DIRECTION,
-                                    GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_BOTTOM,
                                     false,
-                                    GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                                    hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                                 );
                                 *position_vertical.borrow_mut() += steps_taken.unwrap();
                             }
@@ -1222,15 +1201,15 @@ async fn main() {
                             // lower vertitcal to drop position
                             let steps_taken = stepper::gpio_stepper_move(
                                 50, // TODO put in real number
-                                GPIO_STEPPER_VERTICAL_PULSE,
-                                GPIO_STEPPER_VERTICAL_DIRECTION,
-                                GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_PULSE,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_DIRECTION,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY,
                                 false,
-                                GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
+                                hardware_layout::GPIO_STEPPER_VERTICAL_MOTOR_SPEED,
                             );
                             *position_vertical.borrow_mut() -= steps_taken.unwrap();
                             // drop media into tray
-                            let _result = gpio::gpio_set_pin(false, GPIO_RELAY_VACUUM);
+                            let _result = gpio::gpio_set_pin(false, hardware_layout::GPIO_RELAY_VACUUM);
                             // rabbitmq close/start rip
                             let mut ripper_software = "makemkv";
                             if choice_spindle_1_media_type.choice().as_str()
@@ -1262,11 +1241,11 @@ async fn main() {
             // TODO do I zero first or do math?
             let steps_taken = stepper::gpio_stepper_move(
                 hardware_layout::INPUT_SPINDLE_LOCATIONS[1],
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 true,
-                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() += steps_taken.unwrap();
         }
@@ -1274,11 +1253,11 @@ async fn main() {
             // TODO do I zero first or do math?
             let steps_taken = stepper::gpio_stepper_move(
                 hardware_layout::INPUT_SPINDLE_LOCATIONS[2],
-                GPIO_STEPPER_HORIZONTAL_PULSE,
-                GPIO_STEPPER_HORIZONTAL_DIRECTION,
-                GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_DIRECTION,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT,
                 true,
-                GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
+                hardware_layout::GPIO_STEPPER_HORIZONTAL_MOTOR_SPEED,
             );
             *position_horizontal.borrow_mut() += steps_taken.unwrap();
         }
