@@ -23,17 +23,17 @@ mod hardware_layout;
 mod rabbitmq;
 mod stepper;
 
-pub async fn find_steps_to_take(choice_string: &str) -> i32 {
+pub async fn find_steps_to_take(choice_string: i32) -> i32 {
     let mut steps_to_move: i32 = 1;
     match choice_string {
-        "10 Steps" => steps_to_move = 10,
-        "100 Steps" => steps_to_move = 100,
-        "500 Steps" => steps_to_move = 500,
-        "1,000 Steps" => steps_to_move = 1000,
-        "5,000 Steps" => steps_to_move = 5000,
-        "10,000 Steps" => steps_to_move = 10000,
-        "25,000 Steps" => steps_to_move = 25000,
-        "100,000 Steps" => steps_to_move = 100000,
+        1 => steps_to_move = 10,
+        2 => steps_to_move = 100,
+        3 => steps_to_move = 500,
+        4 => steps_to_move = 1000,
+        5 => steps_to_move = 5000,
+        6 => steps_to_move = 10000,
+        7 => steps_to_move = 25000,
+        8 => steps_to_move = 100000,
         _ => {}
     }
     println!("{} {}", choice_string, steps_to_move);
@@ -610,7 +610,7 @@ async fn main() {
     button_right.set_callback({
         let position_horizontal = position_horizontal.clone();
         let mut frame_position_horizontal = frame_position_horizontal.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -651,7 +651,7 @@ async fn main() {
     button_left.set_callback({
         let position_horizontal = position_horizontal.clone();
         let mut frame_position_horizontal = frame_position_horizontal.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -688,7 +688,7 @@ async fn main() {
     button_up.set_callback({
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -729,7 +729,7 @@ async fn main() {
     button_down.set_callback({
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -764,7 +764,7 @@ async fn main() {
     button_back.set_callback({
         let position_camera_tray = position_camera_tray.clone();
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -805,7 +805,7 @@ async fn main() {
     button_forward.set_callback({
         let position_camera_tray = position_camera_tray.clone();
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.choice().as_str()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
