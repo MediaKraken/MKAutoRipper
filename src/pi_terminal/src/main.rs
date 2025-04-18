@@ -36,6 +36,7 @@ pub async fn find_steps_to_take(choice_string: &str) -> i32 {
         "100,000 Steps" => steps_to_move = 100000,
         _ => {}
     }
+    println!("{} {}", choice_string, steps_to_move);
     steps_to_move
 }
 
