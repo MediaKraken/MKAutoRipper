@@ -6,14 +6,14 @@ pub const DRIVETYPE_UHD: &str = "UHD";
 pub const DRIVETYPE_HDDVD: &str = "HDDVD";
 
 // these "locations" are ticks from 0 for the movement arm
-pub const INPUT_SPINDLE_LOCATIONS: [i32; 3] = [0, 200, 400];
-pub const OUTPUT_SPINDLE_LOCATIONS: [i32; 4] = [1000, 1200, 1400, 1600];
-pub const CAMERA_LOCATION: (i32, i32) = (500, 1500);
-pub const SPINDLE_HEIGHT: i32 = 5000;
-pub const CAMERA_PLATE_STEPS: i32 = 500;
+pub const INPUT_SPINDLE_LOCATIONS: [i32; 3] = [0, 160000, 315000];
+pub const OUTPUT_SPINDLE_LOCATIONS: [i32; 4] = [1283000, 1440000, 1600000, 1756000];
+pub const CAMERA_LOCATION: (i32, i32) = (0, 0);
+pub const SPINDLE_HEIGHT: i32 = 0;
+pub const CAMERA_PLATE_STEPS: i32 = 0
 
-pub const DRIVE_COLUMN_LOCATIONS: [i32; 5] = [0, 200, 400, 800, 1200];
-pub const DRIVE_ROW_LOCATIONS: [i32; 7] = [1000, 1200, 1400, 1600, 3000, 6000, 9000];
+pub const DRIVE_COLUMN_LOCATIONS: [i32; 5] = [516500, 709500, 892500, 1083500, 1066000];
+pub const DRIVE_ROW_LOCATIONS: [i32; 7] = [0, 0, 0, 0, 0, 0, 0];
 
 // BCM pin numbering! Do not use physcial pin numbers.
 // Main movement arm
