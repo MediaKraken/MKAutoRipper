@@ -293,7 +293,7 @@ async fn main() {
 
     let mut container_spindle = Pack::new(10, 25, 300, 35, "Spindle Type");
     // setup control for spindle media
-    let mut choice_spindle_1_media_type = MenuButton::new(20, 20, 120, 30, "None");
+    let mut choice_spindle_1_media_type = Choice::new(20, 20, 120, 30, "None");
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
@@ -486,7 +486,7 @@ async fn main() {
             let mut steps_to_move: i32 = 0;
             let mut hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT;
             let choice_string_string = choice_string.choice().unwrap();
-            match choice_string.as_str() {
+            match choice_string_string.as_str() {
                 "Input One" => {
                     if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[0] {
                         steps_to_move =
