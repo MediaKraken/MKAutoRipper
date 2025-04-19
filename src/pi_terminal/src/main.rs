@@ -480,12 +480,13 @@ async fn main() {
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
         let position_vertical_int = *(position_vertical.borrow());
-        let choice_string = container_action_type.clone().choice().unwrap();
+        let choice_string = container_action_type.clone();
         move |_| {
             let mut move_clockwise = false;
             let mut steps_to_move: i32 = 0;
             let mut hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT;
-            match choice_string.as_str() {
+            let choice_string_string = choice_string.choice().unwrap();
+            match choice_string_string.as_str() {
                 "Input One" => {
                     if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[0] {
                         steps_to_move =
