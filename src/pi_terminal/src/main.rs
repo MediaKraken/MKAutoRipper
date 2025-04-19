@@ -293,14 +293,14 @@ async fn main() {
 
     let mut container_spindle = Pack::new(10, 25, 300, 35, "Spindle Type");
     // setup control for spindle media
-    let mut choice_spindle_1_media_type = Choice::new(20, 20, 120, 30, "None");
+    let mut choice_spindle_1_media_type = Choice::new(20, 20, 120, 30, None);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_BRAY);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_UHD);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_HDDVD);
-    // choice_spindle_1_media_type.set_current_choice(0);
+    choice_spindle_1_media_type.set_value(0);
     // choice_spindle_1_media_type
     //     .button()
     //     .set_frame(FrameType::BorderBox);
@@ -309,14 +309,14 @@ async fn main() {
     //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_2_media_type = MenuButton::new(20, 175, 120, 30, "None");
+    let mut choice_spindle_2_media_type = Choice::new(20, 175, 120, 30, None);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_BRAY);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_UHD);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_HDDVD);
-    // choice_spindle_2_media_type.set_current_choice(0);
+    choice_spindle_2_media_type.set_value(0);
     // choice_spindle_2_media_type
     //     .button()
     //     .set_frame(FrameType::BorderBox);
@@ -325,14 +325,14 @@ async fn main() {
     //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_3_media_type = MenuButton::new(20, 280, 120, 30, "None");
+    let mut choice_spindle_3_media_type = Choice::new(20, 280, 120, 30, None);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_BRAY);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_UHD);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_HDDVD);
-    // choice_spindle_3_media_type.set_current_choice(0);
+    choice_spindle_3_media_type.set_value(0);
     // choice_spindle_3_media_type
     //     .button()
     //     .set_frame(FrameType::BorderBox);
@@ -412,10 +412,10 @@ async fn main() {
     container_info.set_type(PackType::Horizontal);
 
     let mut container_action = Pack::new(345, 265, 225, 35, "Action Type");
-    let mut container_action_type = MenuButton::new(20, 20, 225, 35, "1 Step");
+    let mut container_action_type = Choice::new(20, 20, 225, 35, None);
     container_action_type.add_choice(
         "1 Step|10 Steps|100 Steps|500 Steps|1,000 Steps|5,000 Steps|10,000 Steps|25,000 Steps|100,000 Steps|Input One|Input Two|Input Three|Output One|Output Two|Output Three|Output FourDrive Column One|Drive Column Two|Drive Column Three|Drive Column Four|Column Camera|Column HDDVD|Drive Row One|Drive Row Two|Drive Row Three|Drive Row Four|Row Camera|Row HDDVD");
-    // container_action_type.set_current_choice(0);
+    container_action_type.set_value(0);
     // container_action_type
     //     .button()
     //     .set_frame(FrameType::BorderBox);
