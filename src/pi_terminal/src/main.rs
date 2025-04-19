@@ -293,7 +293,7 @@ async fn main() {
 
     let mut container_spindle = Pack::new(10, 25, 300, 35, "Spindle Type");
     // setup control for spindle media
-    let mut choice_spindle_1_media_type = MenuButton::new(20, 20, 120, 30, None);
+    let mut choice_spindle_1_media_type = MenuButton::new(20, 20, 120, 30, "None");
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
@@ -309,7 +309,7 @@ async fn main() {
     //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_2_media_type = MenuButton::new(20, 175, 120, 30, None);
+    let mut choice_spindle_2_media_type = MenuButton::new(20, 175, 120, 30, "None");
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
@@ -325,7 +325,7 @@ async fn main() {
     //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_3_media_type = MenuButton::new(20, 280, 120, 30, None);
+    let mut choice_spindle_3_media_type = MenuButton::new(20, 280, 120, 30, "None");
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
@@ -412,7 +412,7 @@ async fn main() {
     container_info.set_type(PackType::Horizontal);
 
     let mut container_action = Pack::new(345, 265, 225, 35, "Action Type");
-    let mut container_action_type = MenuButton::new(20, 20, 225, 35, None);
+    let mut container_action_type = MenuButton::new(20, 20, 225, 35, "1 Step");
     container_action_type.add_choice(
         "1 Step|10 Steps|100 Steps|500 Steps|1,000 Steps|5,000 Steps|10,000 Steps|25,000 Steps|100,000 Steps|Input One|Input Two|Input Three|Output One|Output Two|Output Three|Output FourDrive Column One|Drive Column Two|Drive Column Three|Drive Column Four|Column Camera|Column HDDVD|Drive Row One|Drive Row Two|Drive Row Three|Drive Row Four|Row Camera|Row HDDVD");
     // container_action_type.set_current_choice(0);
@@ -486,7 +486,7 @@ async fn main() {
             let mut steps_to_move: i32 = 0;
             let mut hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_RIGHT;
             let choice_string_string = choice_string.choice().unwrap();
-            match choice_string_string.as_str() {
+            match choice_string.as_str() {
                 "Input One" => {
                     if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[0] {
                         steps_to_move =
