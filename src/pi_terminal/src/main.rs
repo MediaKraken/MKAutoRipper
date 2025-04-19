@@ -32,7 +32,7 @@ mod hardware_layout;
 mod rabbitmq;
 mod stepper;
 
-pub async fn find_steps_to_take(choice_string: i32) -> i32 {
+pub fn find_steps_to_take(choice_string: i32) -> i32 {
     let mut steps_to_move: i32 = 1;
     match choice_string {
         1 => steps_to_move = 10,
@@ -309,7 +309,7 @@ async fn main() {
     //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_2_media_type = MenuButton::new(20, 175, 120, 30, None);
+    let mut choice_spindle_2_media_type = MenuButton::new(20, 175, 120, 30, "None");
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
@@ -325,7 +325,7 @@ async fn main() {
     //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
-    let mut choice_spindle_3_media_type = MenuButton::new(20, 280, 120, 30, None);
+    let mut choice_spindle_3_media_type = MenuButton::new(20, 280, 120, 30, "None");
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_NONE);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_CD);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_DVD);
@@ -412,7 +412,7 @@ async fn main() {
     container_info.set_type(PackType::Horizontal);
 
     let mut container_action = Pack::new(345, 265, 225, 35, "Action Type");
-    let mut container_action_type = MenuButton::new(20, 20, 225, 35, None);
+    let mut container_action_type = MenuButton::new(20, 20, 225, 35, "1 Step");
     container_action_type.add_choice(
         "1 Step|10 Steps|100 Steps|500 Steps|1,000 Steps|5,000 Steps|10,000 Steps|25,000 Steps|100,000 Steps|Input One|Input Two|Input Three|Output One|Output Two|Output Three|Output FourDrive Column One|Drive Column Two|Drive Column Three|Drive Column Four|Column Camera|Column HDDVD|Drive Row One|Drive Row Two|Drive Row Three|Drive Row Four|Row Camera|Row HDDVD");
     // container_action_type.set_current_choice(0);
@@ -480,7 +480,7 @@ async fn main() {
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
         let position_vertical_int = *(position_vertical.borrow());
-        let choice_string = container_action_type.choice().unwrap();
+        let choice_string = container_action_type.clone().choice().unwrap();
         move |_| {
             let mut move_clockwise = false;
             let mut steps_to_move: i32 = 0;
@@ -585,7 +585,7 @@ async fn main() {
     button_right.set_callback({
         let position_horizontal = position_horizontal.clone();
         let mut frame_position_horizontal = frame_position_horizontal.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.clone().value());
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -626,7 +626,7 @@ async fn main() {
     button_left.set_callback({
         let position_horizontal = position_horizontal.clone();
         let mut frame_position_horizontal = frame_position_horizontal.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.clone().value());
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -663,7 +663,7 @@ async fn main() {
     button_up.set_callback({
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.clone().value());
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -704,7 +704,7 @@ async fn main() {
     button_down.set_callback({
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.clone().value());
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -739,7 +739,7 @@ async fn main() {
     button_back.set_callback({
         let position_camera_tray = position_camera_tray.clone();
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
+        let steps_to_move: i32 = find_steps_to_take(container_action_type.clone().value());
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
@@ -780,7 +780,8 @@ async fn main() {
     button_forward.set_callback({
         let position_camera_tray = position_camera_tray.clone();
         let mut frame_position_camera_tray = frame_position_camera_tray.clone();
-        let steps_to_move: i32 = find_steps_to_take(container_action_type.value()).await;
+        let action_type = container_action_type.clone();
+        let steps_to_move: i32 = find_steps_to_take(action_type.value());
         move |_| {
             let steps_taken = stepper::gpio_stepper_move(
                 steps_to_move,
