@@ -39,9 +39,9 @@ pub fn gpio_stepper_move(
         steps_moved += 1;
         pin_check += 1;
         stepper_pulse_output.set_high();
-        //thread::sleep(Duration::from_micros(motor_speed));
+        thread::sleep(Duration::from_micros(motor_speed));
         stepper_pulse_output.set_low();
-        //thread::sleep(Duration::from_micros(motor_speed));
+        thread::sleep(Duration::from_micros(motor_speed));
         // Check for hard stops
         if pin_check == 10 {
             pin_check = 0;
