@@ -46,6 +46,7 @@ pub fn gpio_stepper_move(
         if pin_check == 10 {
             pin_check = 0;
             if pin.read() == rppal::gpio::Level::Low {
+                println!("Hard Stop");
                 break;
             }
         }
