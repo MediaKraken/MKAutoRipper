@@ -43,13 +43,13 @@ pub fn gpio_stepper_move(
         stepper_pulse_output.set_low();
         thread::sleep(Duration::from_micros(motor_speed));
         // Check for hard stops
-        if pin_check == 10 {
-            pin_check = 0;
-            if pin.read() == rppal::gpio::Level::Low {
-                println!("Hard Stop");
-                break;
-            }
-        }
+        // if pin_check == 10 {
+        //     pin_check = 0;
+        //     if pin.read() == rppal::gpio::Level::Low {
+        //         println!("Hard Stop");
+        //         break;
+        //     }
+        // }
     }
     Ok(steps_moved)
 }
