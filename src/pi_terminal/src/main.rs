@@ -11,7 +11,6 @@ use fltk::{
 };
 use fltk_table::{SmartTable, TableOpts};
 use rppal::gpio::Gpio;
-use rppal::i2c::I2c;
 use rppal::pwm::{Channel, Pwm};
 use rppal::spi::{Bus, Mode, SlaveSelect, Spi};
 use rppal::uart::{Parity, Uart};
@@ -22,7 +21,6 @@ use std::{cell::RefCell, rc::Rc};
 use std::{fs, i32};
 use tokio::time::{sleep, Duration};
 use uuid::Uuid;
-//use std::borrow::Borrow;
 
 mod byte_size;
 mod camera;
@@ -277,7 +275,7 @@ async fn main() {
     let db_pool = database::database_open().unwrap();
 
     // connect to rabbitmq
-    let (_rabbit_connection, rabbit_channel) =
+    let (rabbit_connection, rabbit_channel) =
         rabbitmq::rabbitmq_connect("mkterminal").await.unwrap();
     let mut rabbit_consumer = rabbitmq::rabbitmq_consumer("mkterminal", &rabbit_channel)
         .await
@@ -302,12 +300,6 @@ async fn main() {
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_UHD);
     choice_spindle_1_media_type.add_choice(hardware_layout::DRIVETYPE_HDDVD);
     choice_spindle_1_media_type.set_value(0);
-    // choice_spindle_1_media_type
-    //     .button()
-    //     .set_frame(FrameType::BorderBox);
-    // choice_spindle_1_media_type
-    //     .frame()
-    //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
     let mut choice_spindle_2_media_type = Choice::new(20, 175, 120, 30, None);
@@ -318,12 +310,6 @@ async fn main() {
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_UHD);
     choice_spindle_2_media_type.add_choice(hardware_layout::DRIVETYPE_HDDVD);
     choice_spindle_2_media_type.set_value(0);
-    // choice_spindle_2_media_type
-    //     .button()
-    //     .set_frame(FrameType::BorderBox);
-    // choice_spindle_2_media_type
-    //     .frame()
-    //     .set_frame(FrameType::BorderBox);
 
     // setup control for spindle media
     let mut choice_spindle_3_media_type = Choice::new(20, 280, 120, 30, None);
@@ -334,12 +320,6 @@ async fn main() {
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_UHD);
     choice_spindle_3_media_type.add_choice(hardware_layout::DRIVETYPE_HDDVD);
     choice_spindle_3_media_type.set_value(0);
-    // choice_spindle_3_media_type
-    //     .button()
-    //     .set_frame(FrameType::BorderBox);
-    // choice_spindle_3_media_type
-    //     .frame()
-    //     .set_frame(FrameType::BorderBox);
 
     container_spindle.end();
     container_spindle.set_frame(FrameType::BorderFrame);
@@ -417,12 +397,6 @@ async fn main() {
     container_action_type.add_choice(
         "1 Step|10 Steps|100 Steps|500 Steps|1,000 Steps|5,000 Steps|10,000 Steps|25,000 Steps|50,000 Steps|100,000 Steps|Input One|Input Two|Input Three|Output One|Output Two|Output Three|Output FourDrive Column One|Drive Column Two|Drive Column Three|Drive Column Four|Column Camera|Column HDDVD|Drive Row One|Drive Row Two|Drive Row Three|Drive Row Four|Row Camera|Row HDDVD");
     container_action_type.set_value(0);
-    // container_action_type
-    //     .button()
-    //     .set_frame(FrameType::BorderBox);
-    // container_action_type
-    //     .frame()
-    //     .set_frame(FrameType::BorderBox);
     container_action.end();
     container_action.set_frame(FrameType::BorderFrame);
     container_action.set_color(Color::Black);
@@ -1235,7 +1209,7 @@ async fn main() {
             *position_horizontal.borrow_mut() += steps_taken.unwrap();
         }
         if spindle_three_media_left {
-            // TODO do I zero first or do math?
+            // TODO do math
             let steps_taken = stepper::gpio_stepper_move(
                 hardware_layout::INPUT_SPINDLE_LOCATIONS[2],
                 hardware_layout::GPIO_STEPPER_HORIZONTAL_PULSE,
@@ -1248,4 +1222,5 @@ async fn main() {
         }
         sleep(Duration::from_secs(1)).await;
     }
+    rabbitmq::rabbitmq_close(rabbit_channel, rabbit_connection);
 }

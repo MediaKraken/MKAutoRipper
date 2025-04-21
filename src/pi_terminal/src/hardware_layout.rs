@@ -40,7 +40,6 @@ pub const GPIO_STEPPER_TRAY_MOTOR_SPEED: u64 = 50;
 
 pub const GPIO_RELAY_VACUUM: u8 = 20; // 38
 pub const GPIO_RELAY_LIGHT: u8 = 16; // 36
-pub const GPIO_KILL_SWITCH: u8 = 255; // ??
 
 /*
 u8 has the max value of 255
