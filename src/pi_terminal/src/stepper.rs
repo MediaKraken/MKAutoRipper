@@ -1,15 +1,20 @@
 use crate::hardware_layout;
 use rppal::gpio::Gpio;
-use rppal::i2c::I2c;
 use std::error::Error;
 use std::thread;
 use std::time::Duration;
+use linux_embedded_hal::I2cdev;
+use nb::block;
+use ads1x1x::{
+    channel,
+    ic::{Ads1115, Resolution16Bit},
+    Ads1x1x, TargetAddr,
+};
 
-// ADS1115 I2C default address.
-const ADDR_ADS1115: u16 = 0x48;
+type Adc = Ads1x1x<I2cdev, Ads1115, Resolution16Bit, ads1x1x::mode::OneShot>;
 
-fn bcd2dec(bcd: u8) -> u8 {
-    (((bcd & 0xF0) >> 4) * 10) + (bcd & 0x0F)
+pub fn read(adc: &mut Adc) -> i16 {
+    block!(adc.read(channel::SingleA0)).unwrap_or(0)
 }
 
 // Gpio uses BCM pin numbering.
@@ -21,8 +26,8 @@ pub fn gpio_stepper_move(
     move_clockwise: bool,
     motor_speed: u64,
 ) -> Result<i32, Box<dyn Error>> {
-    let mut i2c = I2c::new()?;
-    i2c.set_slave_address(ADDR_ADS1115)?;
+    let dev = I2cdev::new("/dev/i2c-1").unwrap();
+    let mut adc = Ads1x1x::new_ads1115(dev, TargetAddr::default());
     let mut steps_moved: i32 = 0;
     let gpios = match Gpio::new() {
         Ok(gpios) => gpios,
@@ -56,9 +61,8 @@ pub fn gpio_stepper_move(
         thread::sleep(Duration::from_micros(motor_speed));
         // Check for hard stops
         if hard_stop_pin_number == hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY {
-            i2c.block_read(0x00, &mut height_sensor_data)?;
-            let decimal_result = bcd2dec(height_sensor_data[0]);
-            if decimal_result < 0 {
+            let value = read(&mut adc);
+            if value < 16000 {
                 println!("Sensor Stop");
                 break;
             }
@@ -71,5 +75,6 @@ pub fn gpio_stepper_move(
         //     }
         // }
     }
+    let _dev = adc.destroy_ads1115();
     Ok(steps_moved)
 }
