@@ -395,7 +395,7 @@ async fn main() {
     let mut container_action = Pack::new(345, 265, 225, 35, "Action Type");
     let mut container_action_type = Choice::new(20, 20, 225, 35, None);
     container_action_type.add_choice(
-        "1 Step|10 Steps|100 Steps|500 Steps|1,000 Steps|5,000 Steps|10,000 Steps|25,000 Steps|50,000 Steps|100,000 Steps|Input One|Input Two|Input Three|Output One|Output Two|Output Three|Output FourDrive Column One|Drive Column Two|Drive Column Three|Drive Column Four|Column Camera|Column HDDVD|Drive Row One|Drive Row Two|Drive Row Three|Drive Row Four|Row Camera|Row HDDVD");
+        "1 Step|10 Steps|100 Steps|500 Steps|1,000 Steps|5,000 Steps|10,000 Steps|25,000 Steps|50,000 Steps|100,000 Steps|Input One|Input Two|Input Three|Output One|Output Two|Output Three|Output FourDrive Column One|Drive Column Two|Drive Column Three|Drive Column Four|Column Camera|Column HDDVD|Drive Row One|Drive Row Two|Drive Row Three|Drive Row Four|Row Camera|Row HDDVD|Horizontal to 0|Vertical to 0|Camera to 0");
     container_action_type.set_value(0);
     container_action.end();
     container_action.set_frame(FrameType::BorderFrame);
@@ -455,6 +455,11 @@ async fn main() {
         let position_vertical = position_vertical.clone();
         let mut frame_position_vertical = frame_position_vertical.clone();
         let position_vertical_int = *(position_vertical.borrow());
+        // camera tray
+        let position_camera_tray = position_camera_tray.clone();
+        let mut frame_position_camera_tray = frame_position_camera_tray.clone();
+        let position_camera_tray_int = *(position_camera_tray.borrow());
+
         let choice_string = container_action_type.clone();
         move |_| {
             let mut move_clockwise = false;
@@ -467,58 +472,120 @@ async fn main() {
                         steps_to_move =
                             position_horizontal_int - hardware_layout::INPUT_SPINDLE_LOCATIONS[0];
                     } else {
+                        steps_to_move =
+                            hardware_layout::INPUT_SPINDLE_LOCATIONS[0] - position_horizontal_int;
                         move_clockwise = true;
                         hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Input Two" => {
                     if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[1] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::INPUT_SPINDLE_LOCATIONS[1];
                     } else {
+                        steps_to_move =
+                            hardware_layout::INPUT_SPINDLE_LOCATIONS[1] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Input Three" => {
                     if position_horizontal_int <= hardware_layout::INPUT_SPINDLE_LOCATIONS[2] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::INPUT_SPINDLE_LOCATIONS[2];
                     } else {
+                        steps_to_move =
+                            hardware_layout::INPUT_SPINDLE_LOCATIONS[2] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Output One" => {
                     if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[0] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::OUTPUT_SPINDLE_LOCATIONS[0];
                     } else {
+                        steps_to_move =
+                            hardware_layout::OUTPUT_SPINDLE_LOCATIONS[0] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Output Two" => {
                     if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[1] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::OUTPUT_SPINDLE_LOCATIONS[1];
                     } else {
+                        steps_to_move =
+                            hardware_layout::OUTPUT_SPINDLE_LOCATIONS[1] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Output Three" => {
                     if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[2] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::OUTPUT_SPINDLE_LOCATIONS[2];
                     } else {
+                        steps_to_move =
+                            hardware_layout::OUTPUT_SPINDLE_LOCATIONS[2] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Output Four" => {
                     if position_horizontal_int <= hardware_layout::OUTPUT_SPINDLE_LOCATIONS[3] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::OUTPUT_SPINDLE_LOCATIONS[3];
                     } else {
+                        steps_to_move =
+                            hardware_layout::OUTPUT_SPINDLE_LOCATIONS[3] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Drive Column One" => {
                     if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[0] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::DRIVE_COLUMN_LOCATIONS[0];
                     } else {
+                        steps_to_move =
+                            hardware_layout::DRIVE_COLUMN_LOCATIONS[0] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Drive Column Two" => {
                     if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[1] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::DRIVE_COLUMN_LOCATIONS[1];
                     } else {
+                        steps_to_move =
+                            hardware_layout::DRIVE_COLUMN_LOCATIONS[1] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Drive Column Three" => {
                     if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[2] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::DRIVE_COLUMN_LOCATIONS[2];
                     } else {
+                        steps_to_move =
+                            hardware_layout::DRIVE_COLUMN_LOCATIONS[2] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Drive Column Four" => {
                     if position_horizontal_int <= hardware_layout::DRIVE_COLUMN_LOCATIONS[3] {
+                        steps_to_move =
+                            position_horizontal_int - hardware_layout::DRIVE_COLUMN_LOCATIONS[3];
                     } else {
+                        steps_to_move =
+                            hardware_layout::DRIVE_COLUMN_LOCATIONS[3] - position_horizontal_int;
+                        move_clockwise = true;
+                        hard_stop_pin = hardware_layout::GPIO_STEPPER_HORIZONTAL_END_STOP_LEFT
                     }
                 }
                 "Column Camera" => {
@@ -537,6 +604,18 @@ async fn main() {
                 "Drive Row Four" => {}
                 "Row Camera" => {}
                 "Row HDDVD" => {}
+                "Horizontal to 0" => {
+                    *position_horizontal.borrow_mut() = 0;
+                    frame_position_horizontal.set_label(&"Horiz: 0");
+                }
+                "Vertical to 0" => {
+                    *position_vertical.borrow_mut() = 0;
+                    frame_position_vertical.set_label(&"Vert: 0");
+                }
+                "Camera to 0" => {
+                    *position_camera_tray.borrow_mut() = 0;
+                    frame_position_camera_tray.set_label(&"Tray: 0");
+                }
                 _ => println!("ERROR! Bad Action Type"),
             }
             if steps_to_move != 0 {
