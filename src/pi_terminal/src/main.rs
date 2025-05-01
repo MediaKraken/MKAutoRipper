@@ -28,6 +28,7 @@ mod database;
 mod gpio;
 mod hardware_layout;
 mod rabbitmq;
+mod servo;
 mod stepper;
 
 pub fn find_steps_to_take(choice_string: i32) -> i32 {

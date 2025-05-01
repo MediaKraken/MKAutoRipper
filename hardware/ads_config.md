@@ -6,6 +6,14 @@ sudo reboot
 sudo i2cdetect -y 1
 verify the devices shows up
 
+# https://github.com/CCSnell/BLTouch4bCNC
+# https://github.com/chepo92/3DtouchTestSimple
+# https://github.com/BNieveld/CrTouch-Tester
+
+# to test - add to
+/etc/udev/rules.d/99-arduino.rules
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="2341", GROUP="plugdev", MODE="0666"
+
 # pinouts
 ADS1x15 VDD to Raspberry Pi 3.3V                PIN 1
 ADS1x15 GND to Raspberry Pi GND                 PIN 9, 25, 39
