@@ -41,7 +41,7 @@ COPY --from=cargo-build-mkripper /mediakraken/target/mkripper /mkripper
 
 WORKDIR /mediakraken
 
-ARG MAKEMKV=1.17.8
+ARG MAKEMKV=1.17.9
 
 ADD https://www.makemkv.com/download/makemkv-bin-${MAKEMKV}.tar.gz /mediakraken/.
 ADD https://www.makemkv.com/download/makemkv-oss-${MAKEMKV}.tar.gz /mediakraken/.
@@ -52,9 +52,11 @@ RUN tar -xvzf /mediakraken/makemkv-bin* \
   && apt-get update && apt-get install -y \
   build-essential pkg-config libc6-dev libssl-dev libexpat1-dev libavcodec-dev libgl1-mesa-dev zlib1g-dev \
   abcde \
+  b3sum \
   flac \
   cd-discid \
   libcdparanoia0 \
+  libdiscid0 \
   less coreutils \
   && rm -rf /var/lib/apt/lists/* \
   && cd /mediakraken/makemkv-oss-${MAKEMKV} && yes accept | ./configure --disable-gui && make -j`getconf _NPROCESSORS_ONLN` && make install \

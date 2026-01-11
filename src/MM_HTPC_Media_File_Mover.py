@@ -32,6 +32,8 @@ dir_to_parse.append('Sports_Misc')
 dir_to_parse.append('VHS')
 dir_to_parse.append('VHS_Super')
 
+# TODO add uhd stuff
+
 # loop through the directories looking for media files
 for directory_local in dir_to_parse:
     # not all dirs will exist in the media directories

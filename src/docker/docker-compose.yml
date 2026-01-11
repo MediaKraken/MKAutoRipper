@@ -26,6 +26,42 @@ services:
     stop_grace_period: 30s
     stop_signal: SIGUSR1
 
+  ripper3:
+    image: mediakraken/mkripper:dev
+    environment:
+      - WAIT_HOSTS=rabbitmq:5672
+      - WAIT_TIMEOUT=180
+    command: sh -c "/wait && /ripper"
+    devices:
+      - '/dev/sr2:/dev/sr0'
+    privileged: true 
+    stop_grace_period: 30s
+    stop_signal: SIGUSR1
+
+  ripper4:
+    image: mediakraken/mkripper:dev
+    environment:
+      - WAIT_HOSTS=rabbitmq:5672
+      - WAIT_TIMEOUT=180
+    command: sh -c "/wait && /ripper"
+    devices:
+      - '/dev/sr3:/dev/sr0'
+    privileged: true 
+    stop_grace_period: 30s
+    stop_signal: SIGUSR1
+
+  ripper5:
+    image: mediakraken/mkripper:dev
+    environment:
+      - WAIT_HOSTS=rabbitmq:5672
+      - WAIT_TIMEOUT=180
+    command: sh -c "/wait && /ripper"
+    devices:
+      - '/dev/sr4:/dev/sr0'
+    privileged: true 
+    stop_grace_period: 30s
+    stop_signal: SIGUSR1
+
   rabbitmq:
     image: mediakraken/mkrabbitmq:dev
     environment:
@@ -50,4 +86,3 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/dbus:/var/run/dbus
-

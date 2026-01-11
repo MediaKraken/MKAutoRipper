@@ -9,6 +9,8 @@ use tokio::time::{sleep, Duration};
 mod rabbit;
 use std::ffi::OsStr;
 use std::process;
+use discid::{DiscId, Features};
+use serde_json::json;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -24,7 +26,29 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     serde_json::from_str(&String::from_utf8_lossy(&payload)).unwrap();
                 let mut exit_container: bool = false;
                 // perform command sent to ripper
-                if json_message["Type"] == "makemkv" {
+                if json_message["Type"] == "idmedia" {
+                    let mut media_id: Value = json!({"Blake3": None, "DiscID": None});
+                    // get discid if cd
+                    if json_message["Media"] == "cd" {
+                        let disc: DiscId = DiscId::read_features(None, Features::ISRC).expect("Reading disc failed");
+                        media_id["DiscID"] = disc.id().map(|id| json!(id));
+                    }
+                    // TODO check for kickout (ie, it's been inserted before AND has a good rip (or one in progress))
+                    // blake3 hash of disc
+                    let output = Command::new("dd")
+                        .args([
+                            "if=/dev/sr0",
+                            "bs=4M",
+                            "|",
+                            "b3sum",
+                        ])
+                        .stdout(Stdio::piped())
+                        .output()
+                        .unwrap();
+                    let stdout = String::from_utf8(output.stdout).unwrap();
+                    // TODO check for kickout (ie, it's been inserted before AND has a good rip (or one in progress))
+                }
+                else if json_message["Type"] == "makemkv" {
                     // begin makemkv rip
                     let output = Command::new("makemkvcon")
                         .args([
