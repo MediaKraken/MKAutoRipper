@@ -1,6 +1,7 @@
-use sqlite::State;
+use sqlite::Connection;
 use std::error::Error;
-use std::path::Path;
+
+type DbResult<T> = Result<T, Box<dyn Error>>;
 
 #[non_exhaustive]
 pub struct LogType;
@@ -21,60 +22,115 @@ impl LogType {
     pub const LOG_APP_RIPPING_STOP: u8 = 13;
 }
 
-pub fn database_open() -> Result<sqlite::Connection, Box<dyn Error>> {
-    let db = sqlite::open("pi_terminal.db").unwrap();
-    let query = "CREATE TABLE IF NOT EXISTS totals \
-            (steps_left INTEGER NOT NULL, \
-            steps_right INTEGER NOT NULL, \
-            steps_down INTEGER NOT NULL, \
-            steps_up INTEGER NOT NULL, \
-            steps_forward INTEGER NOT NULL, \
-            steps_back INTEGER NOT NULL, \
-            images_taken INTEGER NOT NULL, \
-            cd_ripped INTEGER NOT NULL, \
-            dvd_ripped INTEGER NOT NULL, \
-            bray_ripped INTEGER NOT NULL, \
-            uhd_ripped INTEGER NOT NULL, \
-            hddvd_ripped INTEGER NOT NULL, \
-            tracks_ripped INTEGER NOT NULL);";
-    db.execute(query).unwrap();
-    let query = "CREATE TABLE IF NOT EXISTS logs \
-            (log_type INTEGER NOT NULL, \
-            log_timestamp DATETIME NOT NULL)";
-    db.execute(query).unwrap();
+#[derive(Debug, Clone, Copy)]
+pub enum TotalType {
+    StepsLeft,
+    StepsRight,
+    StepsDown,
+    StepsUp,
+    StepsForward,
+    StepsBack,
+    ImagesTaken,
+    CdRipped,
+    DvdRipped,
+    BrayRipped,
+    UhdRipped,
+    HddvdRipped,
+    TracksRipped,
+}
+
+impl TotalType {
+    fn as_column_name(self) -> &'static str {
+        match self {
+            TotalType::StepsLeft => "steps_left",
+            TotalType::StepsRight => "steps_right",
+            TotalType::StepsDown => "steps_down",
+            TotalType::StepsUp => "steps_up",
+            TotalType::StepsForward => "steps_forward",
+            TotalType::StepsBack => "steps_back",
+            TotalType::ImagesTaken => "images_taken",
+            TotalType::CdRipped => "cd_ripped",
+            TotalType::DvdRipped => "dvd_ripped",
+            TotalType::BrayRipped => "bray_ripped",
+            TotalType::UhdRipped => "uhd_ripped",
+            TotalType::HddvdRipped => "hddvd_ripped",
+            TotalType::TracksRipped => "tracks_ripped",
+        }
+    }
+}
+
+pub fn database_open() -> DbResult<Connection> {
+    let db = sqlite::open("pi_terminal.db")?;
+
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS totals (
+            steps_left INTEGER NOT NULL DEFAULT 0,
+            steps_right INTEGER NOT NULL DEFAULT 0,
+            steps_down INTEGER NOT NULL DEFAULT 0,
+            steps_up INTEGER NOT NULL DEFAULT 0,
+            steps_forward INTEGER NOT NULL DEFAULT 0,
+            steps_back INTEGER NOT NULL DEFAULT 0,
+            images_taken INTEGER NOT NULL DEFAULT 0,
+            cd_ripped INTEGER NOT NULL DEFAULT 0,
+            dvd_ripped INTEGER NOT NULL DEFAULT 0,
+            bray_ripped INTEGER NOT NULL DEFAULT 0,
+            uhd_ripped INTEGER NOT NULL DEFAULT 0,
+            hddvd_ripped INTEGER NOT NULL DEFAULT 0,
+            tracks_ripped INTEGER NOT NULL DEFAULT 0
+        );",
+    )?;
+
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS logs (
+            log_type INTEGER NOT NULL,
+            log_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );",
+    )?;
+
+    db.execute(
+        "INSERT INTO totals (
+            steps_left,
+            steps_right,
+            steps_down,
+            steps_up,
+            steps_forward,
+            steps_back,
+            images_taken,
+            cd_ripped,
+            dvd_ripped,
+            bray_ripped,
+            uhd_ripped,
+            hddvd_ripped,
+            tracks_ripped
+        )
+        SELECT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        WHERE NOT EXISTS (SELECT 1 FROM totals);",
+    )?;
+
     Ok(db)
 }
 
-// cannot be called explicitly, drops when out of scope
-// pub fn database_insert_clpose(
-//     db: &sqlite::Connection,
-// ) -> Result<(), Box<dyn Error>> {
-//     db.drop();
-//     Ok(())
-// }
+pub fn database_insert_logs(db: &Connection, log_type: u8) -> DbResult<()> {
+    let mut statement = db.prepare(
+        "INSERT INTO logs (log_type, log_timestamp)
+         VALUES (?, CURRENT_TIMESTAMP);",
+    )?;
 
-pub fn database_insert_logs(
-    db: &sqlite::Connection,
-    log_type: u8,
-) -> Result<(), Box<dyn Error>> {
-    let query = format!(
-        "insert into logs (log_type, log_timestamp) \
-        values ({}, CURRENT_TIMESTAMP);",
-        log_type,
-    );
-    db.execute(query).unwrap();
+    statement.bind((1, log_type as i64))?;
+    statement.next()?;
     Ok(())
 }
 
 pub fn database_update_totals(
-    db: &sqlite::Connection,
-    total_type: &str,
+    db: &Connection,
+    total_type: TotalType,
     total_value: i32,
-) -> Result<(), Box<dyn Error>> {
-    let query = format!(
-        "update totals set {} = {} += {}",
-        total_type, total_type, total_value
-    );
-    db.execute(query).unwrap();
+) -> DbResult<()> {
+    let column = total_type.as_column_name();
+    let query = format!("UPDATE totals SET {column} = {column} + ?;");
+
+    let mut statement = db.prepare(query)?;
+    statement.bind((1, total_value as i64))?;
+    statement.next()?;
     Ok(())
 }

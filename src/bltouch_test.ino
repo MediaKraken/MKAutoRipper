@@ -1,60 +1,123 @@
+#include <Servo.h>
 
-/* This tests a BL-TOUCH auto leveling sensor for bCNC. 
- *  It sends a RC servo PWM signal of 10 degrees to lower the test probe.
- *  If the probe is pushed in approximately 0.130", the unit sends a quick positive pulse
- *  on the white wire. No more than 3.3 volts. (That is why pullups on)
- *  The unit will suck the probe in & flash the red light.
- *  Then this sends a PWM signal of 90 degrees to raise the test probe, simulating moving 
- *  to another test point. After a delay it lowers the probe again & starts over.
- *  BL-touch may have inverted output so use the attachInterrupt line for FALLING edge detect.
- *  The repeatability on this one ranged about 0.003"
- *  This example code is in the public domain. Original code by DNA-Robotics.com 2018
- *  https://forum.arduino.cc/index.php?topic=549369.0v
-*/ 
+Servo myservo;
 
-#include <Servo.h> 
-Servo myservo;  // create servo object to control a servo 
-int Touch = 0; 
-int vals = 0; 
-int valsMap = 0;
-const byte interruptPin = 2;  // White probe output wire to Digital pin 2
-const int linkPin = A1;       // the pin that COOLANT_ENABLE is attached to 
-void setup() 
-{ 
-  myservo.attach(3);  // attaches the servo on pin 3 to the servo object 
+const byte interruptPin = 2;   // White probe output wire
+const int servoPin = 3;        // BL-Touch control pin
+const int linkPin = A1;        // COOLANT_ENABLE input
+const int ledPin = LED_BUILTIN;
+
+const int PROBE_DOWN_ANGLE = 10;
+const int PROBE_UP_ANGLE = 90;
+
+const unsigned long SERVO_SETTLE_MS = 15;
+const unsigned long RETRACT_HOLD_MS = 200;
+const unsigned long PROBE_TIMEOUT_MS = 2000;
+const unsigned long IDLE_POLL_MS = 25;
+
+volatile bool probeTriggered = false;
+
+enum ProbeState {
+  STATE_IDLE,
+  STATE_DEPLOYING,
+  STATE_WAITING_FOR_TRIGGER,
+  STATE_RETRACTING
+};
+
+ProbeState probeState = STATE_IDLE;
+unsigned long stateStartedAt = 0;
+unsigned long lastIdlePollAt = 0;
+
+void blink() {
+  probeTriggered = true;
+}
+
+bool probeEnabled() {
+  int rawValue = analogRead(linkPin);
+  int mappedValue = map(rawValue, 0, 1023, 0, 1);
+  return mappedValue == 0;
+}
+
+void setState(ProbeState newState) {
+  probeState = newState;
+  stateStartedAt = millis();
+}
+
+void deployProbe() {
+  myservo.write(PROBE_DOWN_ANGLE);
+}
+
+void retractProbe() {
+  myservo.write(PROBE_UP_ANGLE);
+}
+
+void setup() {
+  myservo.attach(servoPin);
+
   pinMode(ledPin, OUTPUT);
   pinMode(linkPin, INPUT_PULLUP);
   pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, RISING);  // off to on will interrupt & go to blink function
-} 
- 
-void loop() 
-{ 
-  probeWait:
-  vals = map(analogRead(linkPin), 0, 1020, 0, 1);
-  if (vals == 0)
-  {
-   delay(200); 
-   myservo.write(10);              // tell servo to go to DOWN position 
-   delay(15);                       // waits 15ms for the servo to reach the position
-   goto probeRun;
-  }
 
-  else  
-  {
-    myservo.write(90);        // tell servo to go to UP position. 
-    goto probeWait;
-  }
+  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, RISING);
 
-  probeRun:
-  if (Touch == 1)       // went from off to on:
-    {
-      myservo.write(90);        // tell servo to go to UP position. 
-      delay(200);
-      Touch = 0; 
-    }
+  retractProbe();
+  digitalWrite(ledPin, LOW);
+  setState(STATE_IDLE);
 }
 
-void blink() {
-  Touch = 1;
+void loop() {
+  unsigned long now = millis();
+
+  switch (probeState) {
+    case STATE_IDLE:
+      if (now - lastIdlePollAt >= IDLE_POLL_MS) {
+        lastIdlePollAt = now;
+
+        if (probeEnabled()) {
+          probeTriggered = false;
+          digitalWrite(ledPin, HIGH);
+          deployProbe();
+          setState(STATE_DEPLOYING);
+        } else {
+          retractProbe();
+          digitalWrite(ledPin, LOW);
+        }
+      }
+      break;
+
+    case STATE_DEPLOYING:
+      if (!probeEnabled()) {
+        retractProbe();
+        digitalWrite(ledPin, LOW);
+        setState(STATE_IDLE);
+        break;
+      }
+
+      if (now - stateStartedAt >= SERVO_SETTLE_MS) {
+        setState(STATE_WAITING_FOR_TRIGGER);
+      }
+      break;
+
+    case STATE_WAITING_FOR_TRIGGER:
+      if (!probeEnabled()) {
+        retractProbe();
+        digitalWrite(ledPin, LOW);
+        setState(STATE_IDLE);
+        break;
+      }
+
+      if (probeTriggered || (now - stateStartedAt >= PROBE_TIMEOUT_MS)) {
+        retractProbe();
+        setState(STATE_RETRACTING);
+      }
+      break;
+
+    case STATE_RETRACTING:
+      if (now - stateStartedAt >= RETRACT_HOLD_MS) {
+        probeTriggered = false;
+        digitalWrite(ledPin, LOW);
+        setState(STATE_IDLE);
+      }
+      break;
+  }
 }

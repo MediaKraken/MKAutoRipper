@@ -1,4 +1,5 @@
-use std::process::{Command, Stdio};
+use std::path::Path;
+use std::process::Command;
 
 // raspi-config
 //  updated raspi-config
@@ -18,20 +19,25 @@ use std::process::{Command, Stdio};
 // show image stats
 // file still-test.png
 
-pub fn camera_take_image(
-    media_file: &str,
-) -> Result<String, std::io::Error> {
+pub fn camera_take_image(media_file: &str) -> Result<(), std::io::Error> {
     let output = Command::new("libcamera-still")
-        .args([
-            "-e",
-            "png",
-            "-o",
-            &media_file,
-            "-n",
-        ])
-        .stdout(Stdio::piped())
-        .output()
-        .unwrap();
-    let stdout = String::from_utf8(output.stdout).unwrap();
-    Ok(stdout)
+        .args(["-e", "png", "-o", media_file, "-n"])
+        .output()?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(std::io::Error::other(format!(
+            "libcamera-still failed: {}",
+            stderr.trim()
+        )));
+    }
+
+    if !Path::new(media_file).exists() {
+        return Err(std::io::Error::other(format!(
+            "output file was not created: {}",
+            media_file
+        )));
+    }
+
+    Ok(())
 }
