@@ -3,6 +3,8 @@ use std::error::Error;
 
 type DbResult<T> = Result<T, Box<dyn Error>>;
 
+pub type DatabasePoolType = Connection;
+
 #[non_exhaustive]
 pub struct LogType;
 
@@ -15,7 +17,7 @@ impl LogType {
     pub const LOG_STEPS_FORWARD: u8 = 6;
     pub const LOG_STEPS_BACK: u8 = 7;
     pub const LOG_RELAY_LIGHT: u8 = 8;
-    pub const LOG_RELAY_VACCUUM: u8 = 9;
+    pub const LOG_RELAY_VACUUM: u8 = 9;
     pub const LOG_APP_START: u8 = 10;
     pub const LOG_APP_EXIT: u8 = 11;
     pub const LOG_APP_RIPPING_START: u8 = 12;

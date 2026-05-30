@@ -644,7 +644,7 @@ async fn init_services() -> AppResult<Services> {
 
 #[tokio::main]
 async fn main() -> AppResult<()> {
-    let _services = init_services().await?;
+    init_services().await?;
 
     let (fltk_app, _win, ui, mut button_execute_combobox, mut button_zero, mut button_left, mut button_right, mut button_up, mut button_down, mut button_back, mut button_forward, mut button_vacuum, mut button_snapshot, _, _, _) = build_ui();
 

@@ -14,16 +14,16 @@ use serde_json::json;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let (_rabbit_connection, rabbit_channel) = rabbit::rabbitmq_connect("mkautoripper").await.unwrap();
+    let (_rabbit_connection, rabbit_channel) = rabbit::rabbitmq_connect("mkautoripper").await?;
     let mut rabbit_consumer = rabbit::rabbitmq_consumer("ripper", &rabbit_channel)
         .await
-        .unwrap();
+        ?;
 
     tokio::spawn(async move {
         while let Some(msg) = rabbit_consumer.recv().await {
             if let Some(payload) = msg.content {
                 let json_message: Value =
-                    serde_json::from_str(&String::from_utf8_lossy(&payload)).unwrap();
+                    serde_json::from_str(&String::from_utf8_lossy(&payload))?;
                 let mut exit_container: bool = false;
                 // perform command sent to ripper
                 if json_message["Type"] == "idmedia" {
@@ -35,17 +35,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     }
                     // TODO check for kickout (ie, it's been inserted before AND has a good rip (or one in progress))
                     // blake3 hash of disc
-                    let output = Command::new("dd")
-                        .args([
-                            "if=/dev/sr0",
-                            "bs=4M",
-                            "|",
-                            "b3sum",
-                        ])
+                    let output = Command::new("sh")
+                        .args(["-c", "dd if=/dev/sr0 bs=4M | b3sum"])
                         .stdout(Stdio::piped())
-                        .output()
-                        .unwrap();
-                    let stdout = String::from_utf8(output.stdout).unwrap();
+                        .output()?;
+                    let stdout = String::from_utf8(output.stdout)?;
                     // TODO check for kickout (ie, it's been inserted before AND has a good rip (or one in progress))
                 }
                 else if json_message["Type"] == "makemkv" {
@@ -60,19 +54,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
                             format!("/{}/.", json_message["UUID"]).as_str(),
                         ])
                         .stdout(Stdio::piped())
-                        .output()
-                        .unwrap();
-                    let stdout = String::from_utf8(output.stdout).unwrap();
-                    let json_output: Value = serde_json::from_str(&stdout).unwrap();
+                        .output()?;
+                    let stdout = String::from_utf8(output.stdout)?;
+                    let json_output: Value = serde_json::from_str(&stdout)?;
                 } else if json_message["Type"] == "abcde" {
                     // begin abcde rip
                     let output = Command::new("abcde")
                         .args(["-d", "/dev/cdrom", format!("/{}/.", json_message["UUID"]).as_str()])
                         .stdout(Stdio::piped())
-                        .output()
-                        .unwrap();
-                    let stdout = String::from_utf8(output.stdout).unwrap();
-                    let json_output: Value = serde_json::from_str(&stdout).unwrap();
+                        .output()?;
+                    let stdout = String::from_utf8(output.stdout)?;
+                    let json_output: Value = serde_json::from_str(&stdout)?;
                     // TODO look for "Finished."
                 } else if json_message["Type"] == "stop" {
                     // stop rip

@@ -10,14 +10,15 @@ use amqprs::{
 };
 use tokio::sync::mpsc::UnboundedReceiver;
 
+pub type RabbitChannelType = amqprs::channel::Channel;
+
 pub async fn rabbitmq_ack(
     rabbit_channel: &Channel,
     rabbit_msg_id: u64,
 ) -> Result<(), Box<dyn std::error::Error>> {
     rabbit_channel
         .basic_ack(BasicAckArguments::new(rabbit_msg_id, false))
-        .await
-        .unwrap();
+        .await?;
     Ok(())
 }
 
@@ -32,32 +33,27 @@ pub async fn rabbitmq_connect(
         "guest",
         "guest",
     ))
-    .await
-    .unwrap();
+    .await?;
     rabbit_connection
         .register_callback(DefaultConnectionCallback)
-        .await
-        .unwrap();
-    let rabbit_channel = rabbit_connection.open_channel(None).await.unwrap();
+        .await?;
+    let rabbit_channel = rabbit_connection.open_channel(None).await?;
     rabbit_channel
         .register_callback(DefaultChannelCallback)
-        .await
-        .unwrap();
+        .await?;
     let (queue_name, _, _) = rabbit_channel
         .queue_declare(QueueDeclareArguments::durable_client_named(rabbit_queue))
-        .await
-        .unwrap()
-        .unwrap();
-    let rounting_key = rabbit_queue;
+        .await?
+        .ok_or("Queue declare returned None")?;
+    let routing_key = rabbit_queue;
     let exchange_name = "amq.direct";
     rabbit_channel
         .queue_bind(QueueBindArguments::new(
             &queue_name,
             exchange_name,
-            rounting_key,
+            routing_key,
         ))
-        .await
-        .unwrap();
+        .await?;
     Ok((rabbit_connection, rabbit_channel))
 }
 
@@ -68,7 +64,7 @@ pub async fn rabbitmq_consumer(
     let rabbit_args = BasicConsumeArguments::new(rabbit_queue, "mkstack_consumer")
         .manual_ack(true)
         .finish();
-    let (_ctag, rabbit_rx) = rabbit_channel.basic_consume_rx(rabbit_args).await.unwrap();
+    let (_ctag, rabbit_rx) = rabbit_channel.basic_consume_rx(rabbit_args).await?;
     Ok(rabbit_rx)
 }
 
@@ -87,8 +83,7 @@ pub async fn rabbitmq_publish(
             rabbit_message.into_bytes(),
             args,
         )
-        .await
-        .unwrap();
+        .await?;
     Ok(())
 }
 
@@ -96,7 +91,7 @@ pub async fn rabbitmq_close(
     rabbit_channel: Channel,
     rabbit_connection: Connection,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    rabbit_channel.close().await.unwrap();
-    rabbit_connection.close().await.unwrap();
+    rabbit_channel.close().await?;
+    rabbit_connection.close().await?;
     Ok(())
 }
