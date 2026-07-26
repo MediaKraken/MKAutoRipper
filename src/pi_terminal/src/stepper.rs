@@ -11,6 +11,21 @@ use std::error::Error;
 use std::thread;
 use std::time::Duration;
 
+const DEBOUNCE_READS: usize = 10;
+const DEBOUNCE_THRESHOLD: f32 = 0.7;
+const DEBOUNCE_DELAY_US: u64 = 15;
+
+fn read_debounced(input: &rppal::gpio::InputPin, expected_level: Level) -> bool {
+    let mut matches = 0usize;
+    for _ in 0..DEBOUNCE_READS {
+        if input.read() == expected_level {
+            matches += 1;
+        }
+        thread::sleep(Duration::from_micros(DEBOUNCE_DELAY_US));
+    }
+    (matches as f32 / DEBOUNCE_READS as f32) >= DEBOUNCE_THRESHOLD
+}
+
 type Adc = Ads1x1x<I2cdev, Ads1115, Resolution16Bit, ads1x1x::mode::OneShot>;
 
 pub fn read(adc: &mut Adc) -> Result<i16, Box<dyn Error>> {
@@ -45,9 +60,9 @@ pub fn gpio_stepper_move(
     let mut steps_moved = 0;
 
     for _ in 0..steps_to_take {
-        // GPIO end-stop check
+        // GPIO end-stop check (debounced)
         if hard_stop_pin_number != hardware_layout::GPIO_STEPPER_VERTICAL_END_STOP_ASSEMBLY {
-            if hard_stop_input.read() == Level::Low {
+            if read_debounced(&hard_stop_input, Level::Low) {
                 println!("Hard Stop");
                 break;
             }

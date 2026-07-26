@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "mcp_spootev": {
+      "type": "remote",
+      "transport": "sse",
+      "enabled": true,
+      "url": "http://skynetgpu2:9876/sse?collection=mkautoripper"
+    }
+  }
+}

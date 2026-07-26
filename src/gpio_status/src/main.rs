@@ -3,9 +3,25 @@
 
 use std::error::Error;
 use std::fmt;
+use std::thread;
 
-use rppal::gpio::Gpio;
+use rppal::gpio::{Gpio, InputPin, Level};
 use rppal::system::{DeviceInfo, Model};
+
+const DEBOUNCE_READS: usize = 10;
+const DEBOUNCE_THRESHOLD: f32 = 0.7;
+const DEBOUNCE_DELAY_US: u64 = 15;
+
+fn read_debounced_level(input: &impl InputPin) -> u8 {
+    let mut high_count = 0usize;
+    for _ in 0..DEBOUNCE_READS {
+        if input.read() == Level::High {
+            high_count += 1;
+        }
+        thread::sleep(std::time::Duration::from_micros(DEBOUNCE_DELAY_US));
+    }
+    (high_count as f32 / DEBOUNCE_READS as f32) >= DEBOUNCE_THRESHOLD
+}
 
 enum PinType {
     Gpio(u8),
@@ -103,18 +119,30 @@ fn print_header(header: &[PinType]) -> Result<(), Box<dyn Error>> {
     for (idx, pin_type) in header.iter().enumerate() {
         match pin_type {
             PinType::Gpio(bcm_gpio) => {
-                // Retrieve a Pin without converting it to an InputPin,
-                // OutputPin or IoPin, so we can check the pin's mode
-                // and level without affecting its state.
-                let pin = gpio.get(*bcm_gpio)?;
+                let raw_pin = gpio.get(*bcm_gpio)?;
 
-                format_pin(
-                    &mut buf,
-                    idx + 1,
-                    bcm_gpio,
-                    format!("{}", pin.mode()).to_uppercase(),
-                    pin.read() as u8,
-                );
+                if matches!(raw_pin.mode(), rppal::gpio::Mode::Input | rppal::gpio::Mode::InputPullup | rppal::gpio::Mode::InputPulldown) {
+                    match gpio.get(*bcm_gpio).map(|p: rppal::gpio::Pin<_>| p.into_input_pullup()) {
+                        Ok(input) => format_pin(
+                            &mut buf, idx + 1, bcm_gpio,
+                            format!("{}", raw_pin.mode()).to_uppercase(),
+                            read_debounced_level(&input),
+                        ),
+                        Err(_) => format_pin(
+                            &mut buf, idx + 1, bcm_gpio,
+                            format!("{}", raw_pin.mode()).to_uppercase(),
+                            raw_pin.read() as u8,
+                        ),
+                    }
+                } else {
+                    format_pin(
+                        &mut buf,
+                        idx + 1,
+                        bcm_gpio,
+                        format!("{}", raw_pin.mode()).to_uppercase(),
+                        raw_pin.read() as u8,
+                    );
+                }
             }
             _ => format_pin(&mut buf, idx + 1, "", pin_type, ""),
         };
