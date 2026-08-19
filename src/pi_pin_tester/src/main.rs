@@ -7,7 +7,7 @@ const DEBOUNCE_READS: usize = 10;
 const DEBOUNCE_THRESHOLD: f32 = 0.7;
 const DEBOUNCE_DELAY_US: u64 = 15;
 
-fn read_debounced(input: &impl InputPin, expected_level: Level) -> bool {
+fn read_debounced(input: &InputPin, expected_level: Level) -> bool {
     let mut matches = 0usize;
     for _ in 0..DEBOUNCE_READS {
         if input.read() == expected_level {

@@ -5,14 +5,14 @@ use std::error::Error;
 use std::fmt;
 use std::thread;
 
-use rppal::gpio::{Gpio, InputPin, Level};
+use rppal::gpio::{Gpio, InputPin, Level, Mode};
 use rppal::system::{DeviceInfo, Model};
 
 const DEBOUNCE_READS: usize = 10;
 const DEBOUNCE_THRESHOLD: f32 = 0.7;
 const DEBOUNCE_DELAY_US: u64 = 15;
 
-fn read_debounced_level(input: &impl InputPin) -> u8 {
+fn read_debounced_level(input: &InputPin) -> u8 {
     let mut high_count = 0usize;
     for _ in 0..DEBOUNCE_READS {
         if input.read() == Level::High {
@@ -20,7 +20,7 @@ fn read_debounced_level(input: &impl InputPin) -> u8 {
         }
         thread::sleep(std::time::Duration::from_micros(DEBOUNCE_DELAY_US));
     }
-    (high_count as f32 / DEBOUNCE_READS as f32) >= DEBOUNCE_THRESHOLD
+    ((high_count as f32 / DEBOUNCE_READS as f32) >= DEBOUNCE_THRESHOLD) as u8
 }
 
 enum PinType {
@@ -94,7 +94,7 @@ fn format_pin(
     mode: impl fmt::Display,
     level: impl fmt::Display,
 ) {
-    if pin % 2 != 0 {
+    if !pin.is_multiple_of(2) {
         buf.push_str(&format!(
             "| {:>4} | {:<5} | {:>1} | {:>2} |",
             gpio, mode, level, pin
@@ -119,30 +119,22 @@ fn print_header(header: &[PinType]) -> Result<(), Box<dyn Error>> {
     for (idx, pin_type) in header.iter().enumerate() {
         match pin_type {
             PinType::Gpio(bcm_gpio) => {
-                let raw_pin = gpio.get(*bcm_gpio)?;
-
-                if matches!(raw_pin.mode(), rppal::gpio::Mode::Input | rppal::gpio::Mode::InputPullup | rppal::gpio::Mode::InputPulldown) {
-                    match gpio.get(*bcm_gpio).map(|p: rppal::gpio::Pin<_>| p.into_input_pullup()) {
-                        Ok(input) => format_pin(
-                            &mut buf, idx + 1, bcm_gpio,
-                            format!("{}", raw_pin.mode()).to_uppercase(),
-                            read_debounced_level(&input),
-                        ),
-                        Err(_) => format_pin(
-                            &mut buf, idx + 1, bcm_gpio,
-                            format!("{}", raw_pin.mode()).to_uppercase(),
-                            raw_pin.read() as u8,
-                        ),
-                    }
+                let pin = gpio.get(*bcm_gpio)?;
+                let mode = pin.mode();
+                let level = if mode == Mode::Input {
+                    let input = pin.into_input_pullup();
+                    read_debounced_level(&input)
                 } else {
-                    format_pin(
-                        &mut buf,
-                        idx + 1,
-                        bcm_gpio,
-                        format!("{}", raw_pin.mode()).to_uppercase(),
-                        raw_pin.read() as u8,
-                    );
-                }
+                    pin.read() as u8
+                };
+
+                format_pin(
+                    &mut buf,
+                    idx + 1,
+                    bcm_gpio,
+                    format!("{}", mode).to_uppercase(),
+                    level,
+                );
             }
             _ => format_pin(&mut buf, idx + 1, "", pin_type, ""),
         };

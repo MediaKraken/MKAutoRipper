@@ -10,7 +10,6 @@ use fltk::{
 };
 use fltk_table::{SmartTable, TableOpts};
 use std::{cell::RefCell, error::Error, fs, path::Path, rc::Rc};
-use tokio::time::{sleep, Duration};
 
 mod byte_size;
 mod camera;
@@ -73,7 +72,6 @@ struct Position {
     tray: i32,
 }
 
-#[derive(Debug)]
 struct Services {
     db_pool: database::DatabasePoolType,
     rabbit_channel: rabbitmq::RabbitChannelType,
@@ -368,7 +366,7 @@ fn make_media_choice(x: i32, y: i32) -> Choice {
     choice
 }
 
-fn build_ui() -> (app::App, Window, UiHandles, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button) {
+fn build_ui() -> (app::App, Window, UiHandles, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button, Button) {
     let app = app::App::default();
     let mut win = Window::new(0, 0, 800, 500, "pi_terminal for autoripper");
 
@@ -607,7 +605,7 @@ fn register_callbacks(
     button_vacuum.set_callback({
         let controller = controller.clone();
         move |_| {
-            let mut c = controller.borrow_mut();
+            let c = controller.borrow_mut();
             let new_state = !c.state.borrow().vacuum_on;
             if let Err(err) = gpio::gpio_set_pin(new_state, hardware_layout::GPIO_RELAY_VACUUM) {
                 eprintln!("vacuum toggle failed: {err}");

@@ -4,10 +4,11 @@ use ads1x1x::{
     ic::{Ads1115, Resolution16Bit},
     Ads1x1x, TargetAddr,
 };
-use linux_embedded_hal::I2cdev;
+use linux_embedded_hal::{I2CError, I2cdev};
 use nb::block;
 use rppal::gpio::{Gpio, Level};
 use std::error::Error;
+use std::fmt;
 use std::thread;
 use std::time::Duration;
 
@@ -28,8 +29,29 @@ fn read_debounced(input: &rppal::gpio::InputPin, expected_level: Level) -> bool 
 
 type Adc = Ads1x1x<I2cdev, Ads1115, Resolution16Bit, ads1x1x::mode::OneShot>;
 
+#[derive(Debug)]
+struct AdcError(ads1x1x::Error<I2CError>);
+
+impl fmt::Display for AdcError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.0 {
+            ads1x1x::Error::I2C(e) => write!(f, "ADS1115 I2C error: {e}"),
+            ads1x1x::Error::InvalidInputData => f.write_str("ADS1115 invalid input data"),
+        }
+    }
+}
+
+impl Error for AdcError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match &self.0 {
+            ads1x1x::Error::I2C(e) => Some(e),
+            ads1x1x::Error::InvalidInputData => None,
+        }
+    }
+}
+
 pub fn read(adc: &mut Adc) -> Result<i16, Box<dyn Error>> {
-    let value = block!(adc.read(channel::SingleA0))?;
+    let value = block!(adc.read(channel::SingleA0)).map_err(AdcError)?;
     Ok(value)
 }
 

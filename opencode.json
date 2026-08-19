@@ -1,11 +1,11 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "mcp_spootev": {
+    "mcp-qdrant-server": {
       "type": "remote",
       "transport": "sse",
       "enabled": true,
-      "url": "http://skynetgpu2:9876/sse?collection=mkautoripper"
+      "url": "http://skynetmem1:8000/sse?collection=mkautoripper"
     }
   }
 }
