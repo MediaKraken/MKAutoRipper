@@ -7,7 +7,8 @@ services:
     environment:
       - WAIT_HOSTS=rabbitmq:5672
       - WAIT_TIMEOUT=180
-    command: sh -c "/wait && /ripper"
+      - RIPPER_NAME=ripper1
+    command: sh -c "/wait && /mkripper"
     devices:
       - '/dev/sr0:/dev/sr0'
     privileged: true 
@@ -19,7 +20,8 @@ services:
     environment:
       - WAIT_HOSTS=rabbitmq:5672
       - WAIT_TIMEOUT=180
-    command: sh -c "/wait && /ripper"
+      - RIPPER_NAME=ripper2
+    command: sh -c "/wait && /mkripper"
     devices:
       - '/dev/sr1:/dev/sr0'
     privileged: true 
@@ -31,7 +33,8 @@ services:
     environment:
       - WAIT_HOSTS=rabbitmq:5672
       - WAIT_TIMEOUT=180
-    command: sh -c "/wait && /ripper"
+      - RIPPER_NAME=ripper3
+    command: sh -c "/wait && /mkripper"
     devices:
       - '/dev/sr2:/dev/sr0'
     privileged: true 
@@ -43,7 +46,8 @@ services:
     environment:
       - WAIT_HOSTS=rabbitmq:5672
       - WAIT_TIMEOUT=180
-    command: sh -c "/wait && /ripper"
+      - RIPPER_NAME=ripper4
+    command: sh -c "/wait && /mkripper"
     devices:
       - '/dev/sr3:/dev/sr0'
     privileged: true 
@@ -55,7 +59,8 @@ services:
     environment:
       - WAIT_HOSTS=rabbitmq:5672
       - WAIT_TIMEOUT=180
-    command: sh -c "/wait && /ripper"
+      - RIPPER_NAME=ripper5
+    command: sh -c "/wait && /mkripper"
     devices:
       - '/dev/sr4:/dev/sr0'
     privileged: true 

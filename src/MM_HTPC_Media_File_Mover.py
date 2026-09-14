@@ -49,7 +49,7 @@ for directory_local in dir_to_parse:
     for file in files_grabbed:
         print('File: ', file, flush=True)
         new_dir_name = file.rsplit('.', 1)[0]
-        file_extension = extension = os.path.splitext(file)[1]
+        file_extension = os.path.splitext(file)[1]
         if new_dir_name.find('_') == -1:
             pass
         else:

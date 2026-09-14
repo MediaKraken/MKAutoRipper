@@ -1,3 +1,10 @@
 [workspace]
+resolver = "2"
 
 members = ["gpio_status", "pi_pin_tester", "pi_terminal", "docker/ripper"]
+
+[profile.release]
+panic = 'abort'
+strip = "symbols"
+lto = true
+codegen-units = 1

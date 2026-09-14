@@ -8,6 +8,8 @@ pub type DatabasePoolType = Connection;
 #[non_exhaustive]
 pub struct LogType;
 
+// rip-workflow log types are reserved for the rip messaging that is not wired up yet
+#[allow(dead_code)]
 impl LogType {
     pub const LOG_SNAPSHOT: u8 = 1;
     pub const LOG_STEPS_LEFT: u8 = 2;
@@ -24,7 +26,9 @@ impl LogType {
     pub const LOG_APP_RIPPING_STOP: u8 = 13;
 }
 
+// per-media rip counters are reserved for the rip messaging that is not wired up yet
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 pub enum TotalType {
     StepsLeft,
     StepsRight,

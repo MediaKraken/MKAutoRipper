@@ -13,7 +13,7 @@ use tokio::sync::mpsc::UnboundedReceiver;
 pub async fn rabbitmq_ack(
     rabbit_channel: &Channel,
     rabbit_msg_id: u64,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     rabbit_channel
         .basic_ack(BasicAckArguments::new(rabbit_msg_id, false))
         .await?;
@@ -23,7 +23,7 @@ pub async fn rabbitmq_ack(
 pub async fn rabbitmq_connect(
     rabbit_queue: &str,
 ) -> Result<(Connection, Channel), Box<dyn std::error::Error>> {
-    let rabbit_host = "mkrippermq";
+    let rabbit_host = "rabbitmq";
     // open a connection to RabbitMQ server
     let rabbit_connection = Connection::open(&OpenConnectionArguments::new(
         rabbit_host,
@@ -67,10 +67,10 @@ pub async fn rabbitmq_consumer(
 }
 
 pub async fn rabbitmq_publish(
-    rabbit_channel: Channel,
+    rabbit_channel: &Channel,
     rabbit_queue: &str,
     rabbit_message: String,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let args = BasicPublishArguments::new("amq.direct", rabbit_queue);
     rabbit_channel
         .basic_publish(
@@ -82,14 +82,5 @@ pub async fn rabbitmq_publish(
             args,
         )
         .await?;
-    Ok(())
-}
-
-pub async fn rabbitmq_close(
-    rabbit_channel: Channel,
-    rabbit_connection: Connection,
-) -> Result<(), Box<dyn std::error::Error>> {
-    rabbit_channel.close().await?;
-    rabbit_connection.close().await?;
     Ok(())
 }
