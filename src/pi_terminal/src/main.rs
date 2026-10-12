@@ -17,7 +17,6 @@ mod database;
 mod gpio;
 mod hardware_layout;
 mod rabbitmq;
-mod servo;
 mod stepper;
 
 type AppResult<T> = Result<T, Box<dyn Error>>;
