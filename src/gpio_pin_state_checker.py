@@ -5,7 +5,7 @@ GPIOs = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
          22, 23, 24, 25, 26, 27]
 # Setup all GPIOs to input
 for gpio in GPIOs:
-    GPIO.setup(gpio, GPIO.IN)
+    GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     
 # Read state for each GPIO
 for gpio in GPIOs:
