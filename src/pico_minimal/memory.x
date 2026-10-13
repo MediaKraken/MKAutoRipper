@@ -1,6 +1,17 @@
 MEMORY
 {
-    BOOT2 : ORIGIN = 0x10000000, LENGTH = 256
-    FLASH : ORIGIN = 0x10000100, LENGTH = 2M - 256
-    RAM   : ORIGIN = 0x20000000, LENGTH = 264K
+    BOOT2 : ORIGIN = 0x10000000, LENGTH = 0x100
+    FLASH : ORIGIN = 0x10000100, LENGTH = 2048K - 0x100
+    RAM   : ORIGIN = 0x20000000, LENGTH = 256K
 }
+
+EXTERN(BOOT2_FIRMWARE)
+
+SECTIONS {
+    /* Second-stage boot loader goes into the BOOT2 region */
+    .boot2 : {
+        _boot2_start = .;
+        KEEP(*(.boot2));
+        _boot2_end = .;
+    } > BOOT2
+} INSERT BEFORE .text;
