@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 
-members = ["gpio_status", "pi_pin_tester", "pi_terminal", "pico_pwm", "pico_minimal", "docker/ripper"]
+members = ["gpio_status", "pi_pin_tester", "pi_terminal", "pico_pwm", "pico_minimal", "pico_pio", "docker/ripper"]
 
 [profile.release]
 panic = 'abort'

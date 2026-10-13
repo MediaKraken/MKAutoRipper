@@ -1,0 +1,24 @@
+[package]
+name = "pico-stepper-controller-pio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+embedded-hal = "1.0"
+panic-halt = "1.0"
+rp2040-hal = { version = "0.10", features = ["rt", "critical-section-impl"] }
+rp2040-boot2 = "0.3"
+# USB serial (versions must match: usb-device 0.3 pairs with usbd-serial 0.2)
+usb-device = "0.3"
+usbd-serial = "0.2"
+# PIO assembler. Keep `pio` on the same version rp2040-hal uses (0.2 for hal 0.10)
+pio = "0.2"
+pio-proc = "0.2"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+debug = true
