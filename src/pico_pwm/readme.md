@@ -10,11 +10,17 @@ This implementation uses a simple text command protocol over serial:
 echo "1,1000,1" > /dev/ttyACM0
 
 
-
+# see if device shows up
+ls -l /dev/ttyACM*
 
 # build setup
 cargo install elf2uf2-rs
 
+
+
+rustup target add thumbv6m-none-eabi
+# this should push to pico
+cargo build --release --target thumbv6m-none-eabi
 
 
 

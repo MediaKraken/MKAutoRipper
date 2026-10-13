@@ -1,0 +1,19 @@
+[package]
+name = "pico-minimal"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+panic-halt = "0.2"
+embedded-hal = "1.0"
+rp2040-hal = "0.10"
+rp2040-boot2 = "0.3"
+usb-device = "0.3"
+usbd-serial = "0.2"
+nb = "1.0"
+
+[profile.release]
+opt-level = "s"
+lto = true

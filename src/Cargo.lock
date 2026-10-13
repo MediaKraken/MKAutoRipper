@@ -955,6 +955,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "pico-minimal"
+version = "0.1.0"
+dependencies = [
+ "cortex-m",
+ "cortex-m-rt",
+ "embedded-hal 1.0.0",
+ "nb 1.1.0",
+ "panic-halt",
+ "rp2040-boot2",
+ "rp2040-hal",
+ "usb-device",
+ "usbd-serial",
+]
+
+[[package]]
 name = "pico-stepper-controller"
 version = "0.1.0"
 dependencies = [
