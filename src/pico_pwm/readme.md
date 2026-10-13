@@ -18,10 +18,16 @@ cargo install elf2uf2-rs
 
 
 
+# minimal
 cargo build --release --target thumbv6m-none-eabi
 elf2uf2-rs ../target/thumbv6m-none-eabi/release/pico-minimal ../target/thumbv6m-none-eabi/release/pico-minimal.uf2
 cp ../target/thumbv6m-none-eabi/release/pico-minimal.uf2 /media/$USER/RPI-RP2/
 
+
+# full version
+cargo build --release --target thumbv6m-none-eabi
+elf2uf2-rs ../target/thumbv6m-none-eabi/release/pico-stepper-controller ../target/thumbv6m-none-eabi/release/pico-stepper-controller.uf2
+cp ../target/thumbv6m-none-eabi/release/pico-stepper-controller.uf2 /media/$USER/RPI-RP2/
 
 
 
