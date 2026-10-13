@@ -2,7 +2,7 @@
 #![no_main]
 
 use panic_halt as _;
-use rp2040_hal::{pac, entry};
+use rp2040_hal::entry;
 
 #[link_section = ".boot2"]
 #[used]
