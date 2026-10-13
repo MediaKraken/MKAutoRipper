@@ -21,8 +21,7 @@ pub fn gpio_stepper_move(
 
     let mut stepper_pulse_output = gpios.get(pulse_pin_number)?.into_output();
     let mut stepper_direction_output = gpios.get(direction_pin_number)?.into_output();
-    let mut hard_stop_input = gpios.get(hard_stop_pin_number)?.into_input();
-
+    let mut hard_stop_input = gpios.get(hard_stop_pin_number)?.into_input_pullup();
     if move_clockwise {
         stepper_direction_output.set_high();
     } else {
