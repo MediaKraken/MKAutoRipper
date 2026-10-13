@@ -18,9 +18,23 @@ cargo install elf2uf2-rs
 
 
 
+cargo build --release --target thumbv6m-none-eabi
+elf2uf2-rs ../target/thumbv6m-none-eabi/release/pico-minimal ../target/thumbv6m-none-eabi/release/pico-minimal.uf2
+cp ../target/thumbv6m-none-eabi/release/pico-minimal.uf2 /media/$USER/RPI-RP2/
+
+
+
+
+
 rustup target add thumbv6m-none-eabi
 # this should push to pico
 cargo build --release --target thumbv6m-none-eabi
+
+
+
+# see if it flashed
+cat /media/$USER/RPI-RP2/INFO_UF2.TXT
+
 
 
 
