@@ -13,6 +13,7 @@ use rp2040_hal::{
 };
 use usb_device::{class_prelude::*, prelude::*, device::UsbVidPid};
 use usbd_serial::SerialPort;
+use cortex_m::interrupt;
 
 // Required boot2 loader block for the RP2040 chip to boot from external flash
 #[link_section = ".boot2"]
